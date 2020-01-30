@@ -7,7 +7,7 @@ window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 import Swal from 'sweetalert2'/*
 import Vuetify from 'vuetify'*/
 //import 'vuetify/dist/vuetify.min.css'
-import * as VeeValidate from 'vee-validate';
+import VeeValidate from 'vee-validate';
 import store from './store.js';
 Vue.use(VeeValidate,{
     useConstraintAttrs: false

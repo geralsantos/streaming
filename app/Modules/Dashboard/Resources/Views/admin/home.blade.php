@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <title>EMER S.A.C. | Dashboard</title>
+  <title>Streaming | Dashboard</title>
   <meta name="csrf-token" content="{{ csrf_token() }}">
   <!-- Tell the browser to be responsive to screen width -->
   <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
@@ -46,7 +46,7 @@
           <li class="dropdown user user-menu">
             <a href="#" class="dropdown-toggle" data-toggle="dropdown">
               <img src="{{ asset('img/user.png')}}" class="user-image" alt="User Image">
-              <span class="hidden-xs">{{ucwords(auth()->user()->empleado->nombres.' '.auth()->user()->empleado->apellidos)}}</span>
+              <span class="hidden-xs">{{ucwords(auth()->user()->usuario)}}</span>
             </a>
             <ul class="dropdown-menu">
               <!-- User image -->
@@ -54,8 +54,8 @@
                 <img src="{{ asset('img/user.png')}}" class="img-circle" alt="User Image">
 
                 <p>
-                {{ucwords(auth()->user()->empleado->nombres.' '.auth()->user()->empleado->apellidos)}}
-                  <small>{{ucwords(auth()->user()->empleado->cargo)}}</small>
+                {{ucwords(auth()->user()->usuario)}}
+                  <small>{{ucwords(auth()->user()->usuario)}}</small>
                 </p>
               </li>
 

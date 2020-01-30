@@ -5,7 +5,7 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>AdminLTE 2 | Log in</title>
+    <title>Log in</title>
     <!-- Tell the browser to be responsive to screen width -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
@@ -45,7 +45,7 @@ background-size: 100% 100%;" >
 
                 <div class="login-box" style="display:none" >
                     <div class="login-logo">
-                        <a href="../../index2.html"><b>EMER</b></a>
+                        <a href="../../index2.html"><b>STREAMING</b></a>
                     </div>
                     <!-- /.login-logo -->
                     <div class="login-box-body">
