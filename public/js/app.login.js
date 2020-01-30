@@ -81,7 +81,7 @@
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 1);
+/******/ 	return __webpack_require__(__webpack_require__.s = 3);
 /******/ })
 /************************************************************************/
 /******/ ({
@@ -30013,14 +30013,14 @@ var store = new vuex__WEBPACK_IMPORTED_MODULE_1__["default"].Store({
 
 /***/ }),
 
-/***/ 1:
+/***/ 3:
 /*!*****************************************!*\
   !*** multi ./resources/js/app.login.js ***!
   \*****************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(/*! C:\xampp\htdocs\streaming\resources\js\app.login.js */"./resources/js/app.login.js");
+module.exports = __webpack_require__(/*! D:\xampp\htdocs\streaming\resources\js\app.login.js */"./resources/js/app.login.js");
 
 
 /***/ })

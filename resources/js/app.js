@@ -44,8 +44,8 @@ Vue.component('contentheader', {
     },
     template: `<section class="content-header">
     <h1>
-        SISTEMA DE GESTIÓN
-        <small>EMER</small>
+        SISTEMA DE STREAMING
+        <small></small>
     </h1>
     <ol class="breadcrumb">
     <li><a v-if="$router.currentRoute.name!='Dashboard'" href="/dashboard"><i class="fa fa-dashboard"></i>Dashboard</a></li>
@@ -81,8 +81,9 @@ const app = new Vue({
     mounted:function(){
         self = this;
         this.$validator.localize('es', this.dictionary);
-        this.mostrarModuloActivo();
         console.log("abc2");
+
+        this.mostrarModuloActivo();
     },
     methods:{
         mostrarModuloActivo(){

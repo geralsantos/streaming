@@ -14,5 +14,6 @@
 Route::group(['middleware' => 'auth'],function () {
     Route::group(['prefix' => 'dashboard'], function () {
         Route::get('/', ['as' => 'reports', 'uses' => 'HomeController@index']);
+        Route::post('guardar/', ['as' => 'guardar', 'uses' => 'RegistroSalaController@guardar']);
     });
 });

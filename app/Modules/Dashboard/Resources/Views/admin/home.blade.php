@@ -7,14 +7,10 @@
   <meta name="csrf-token" content="{{ csrf_token() }}">
   <!-- Tell the browser to be responsive to screen width -->
   <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
-  <!-- Bootstrap 3.3.7 -->
-  <!-- <link rel="stylesheet" type="text/css" href="{{url('css/mystyle.css')}}"> -->
   <link rel="stylesheet" href="{{ asset('bower_components/bootstrap/dist/css/bootstrap.min.css') }}" type="text/css" />
-  <!-- Font Awesome -->
   <link rel="stylesheet" href="{{ asset('bower_components/font-awesome/css/font-awesome.min.css') }}">
   <link rel="stylesheet" href="{{ asset('dist/css/AdminLTE.min.css') }}">
   <link rel="stylesheet" href="{{ asset('dist/css/skins/_all-skins.min.css') }}">
-  <!-- Google Font -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,300italic,400italic,600italic">
     <link href="https://fonts.googleapis.com/css?family=Material+Icons" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('css/estilo_adjunto.css') }}">
@@ -348,10 +344,7 @@
 <!-- jQuery 3 -->
 <script src="{{ asset('bower_components/jquery/dist/jquery.min.js') }}"></script>
 <!-- jQuery UI 1.11.4 -->
-<script src="{{ asset('bower_components/jquery-ui/jquery-ui.min.js') }}"></script>
 <!-- Resolve conflict in jQuery UI tooltip with Bootstrap tooltip -->
-<script src="{{ asset('bower_components/jquery-slimscroll/jquery.slimscroll.min.js') }}"></script>
-<script src="{{ asset('bower_components/fastclick/lib/fastclick.js') }}"></script>
 <script src="{{ asset('dist/js/adminlte.min.js') }}"></script>
 <!--script src="{{ asset('dist/js/pages/dashboard.js') }}"></script-->
 <!--script src="{{ asset('dist/js/demo.js') }}"></script-->
@@ -367,6 +360,7 @@ if (App::environment('local')) {
 }
 
 ?>
+            <!--script src="{{asset('js/index.js')}}" charset="utf-8"></script-->
 
 
 
