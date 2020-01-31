@@ -9,6 +9,29 @@
         </template>
 
         <template v-slot:content>
+          <TableContent
+            :title="'Listado de Salas'"
+            :headers="headers"
+            :items="items"
+            :loading="loadingTable"
+          >
+            <template v-slot:btnAcciones="{item}">
+              <template>
+                <v-btn
+                  v-if="item.token"
+                  @click="getMedia('',item)"
+                  title="Modificar"
+                  class="info"
+                  small
+                >
+                  Ingresar&nbsp;
+                  <v-icon class="white--text" small>send</v-icon>
+                </v-btn>
+                <v-chip v-if="!item.token" title="Modificar" class="error" small>Inactivo</v-chip>
+              </template>
+            </template>
+          </TableContent>
+
           <div class="row justify-content-center">
             <div class="col-md-8">
               <div class="card">
@@ -143,8 +166,8 @@
             color="primary"
             :loading="loading"
             :disabled="loading"
-            @click="modificando?editar():guardar()"
-          >{{modificando?'Modificar':'Guardar'}}</v-btn>
+            @click="getMedia('guardar')"
+          >{{'Guardar'}}</v-btn>
           <v-btn @click="dialogClose()">Cancelar</v-btn>
         </template>
       </DialogSimple>
@@ -153,17 +176,28 @@
 </template>
 
 <script>
+//var fs = require('fs');
 var Peer = require("simple-peer");
+//var LocalStorage = require('node-localstorage').LocalStorage;
+//const ruta_ = "D:/xampp/htdocs/streaming";
+//const DataUserTmp = new LocalStorage(ruta_);
+//if (typeof localStorage === "undefined" || localStorage === null) {
+//var LocalStorage = require('node-localstorage').LocalStorage;
+//localStorage_ = new LocalStorage('/');
+//}
+
 var self;
 var swal__;
 var toast__;
 import PanelContent from "../components/PanelContent";
+import TableContent from "../components/TableContent";
 import DialogSimple from "../components/DialogSimple";
 export default {
   name: "Dashboard",
   components: {
     PanelContent,
-    DialogSimple
+    DialogSimple,
+    TableContent
   },
   data() {
     return {
@@ -177,6 +211,7 @@ export default {
           frameRate: { max: "1000" }
         }
       },
+      video: null,
       paramsStream: {},
       nombre: null,
       capacidad: null,
@@ -185,6 +220,7 @@ export default {
       menuHoraExpiraSala: false,
       horaExpiraSala: null,
       loading: false,
+      loadingTable: false,
       modificando: false,
       dictionary: {
         custom: {
@@ -197,24 +233,25 @@ export default {
           },
           capacidad: {
             required: () => "Ingrese la capacidad"
-          },horaExpiraSala: {
+          },
+          horaExpiraSala: {
             required: () => "Ingrese la hora"
           }
         }
       },
-      items:[],
+      items: [],
       headers: [
-      {
-        text: "N°",
-        align: "center",
-        value: "id"
-      },
-      { text: "Sala", align: "center", value: "nombre" },
-      { text: "Vigencia", align: "center", value: "expira_sala" },
-    
-      { text: "Fecha", align: "center", value: "fecha_creacion" },
-      { text: "Acciones", value: "action", sortable: false }
-    ],
+        {
+          text: "N°",
+          align: "center",
+          value: "id"
+        },
+        { text: "Sala", align: "center", value: "nombre" },
+        { text: "Vigencia", align: "center", value: "expira_sala" },
+
+        { text: "Fecha Creación", align: "center", value: "fecha_creacion" },
+        { text: "Acciones", value: "action", sortable: false }
+      ]
     };
   },
   watch: {
@@ -226,9 +263,10 @@ export default {
     self = this;
     swal__ = this.$store.getters.getSwal;
     toast__ = this.$store.getters.getToastDefault;
-    
+
     this.$validator.localize("es", this.dictionary);
     this.init();
+    this.cargarSalas();
   },
   methods: {
     dialogClose() {
@@ -250,16 +288,55 @@ export default {
         this.$validator.validateAll();
         self.errors.any();
       }, 250);
-      this.cargarSalas();
     },
-    cargarSalas() {},
-    guardar(){
+    cargarSalas() {
+      this.loadingTable = true;
+      axios
+        .get("dashboard/cargar")
+        .then(response => {
+          var data = response.data;
+          self.items = data;
+          self.loadingTable = false;
+          console.log(data);
+        })
+        .catch(errors => {
+          console.log(errors);
+        });
+    },
+    entrarSala(item) {
+      this.paramsStream = {
+        trickle: false
+      };
+      this.peer1 = new Peer(this.paramsStream);
+
+      this.peer1.on("signal", data => {
+        let dat = JSON.stringify(data);
+        localStorage.setItem("stream", dat);
+        document.getElementById("yourId").value = dat;
+        
+      });
+window.open('/streaming/'+item.id, '_blank');
+
+      
+    },
+    guardar() {
       this.$validator.validateAll();
       if (this.errors.any()) return;
+
+      if (!this.token) {
+        swal__.fire(
+          "ERROR!",
+          "No ha podido crear el token de la sala",
+          "error"
+        );
+        return;
+      }
+
       let valores = {
         nombre: this.nombre,
         capacidad: this.capacidad,
-        expira_sala: this.fechaExpiraSala+" "+this.horaExpiraSala,
+        expira_sala: this.fechaExpiraSala + " " + this.horaExpiraSala,
+        token: this.token
       };
       this.loading = true;
       axios
@@ -278,11 +355,12 @@ export default {
         })
         .finally(() => {
           //self.cargarAll();
+          this.cargarSalas();
           this.dialogClose("dialogSimple");
           this.loading = false;
         });
     },
-    async getMedia() {
+    async getMedia(opcion,item="") {
       let stream = null;
       try {
         console.log(navigator.mediaDevices.getUserMedia);
@@ -296,9 +374,14 @@ export default {
             audio: true
           });
         }
-        stream = await navigator.getUserMedia_
+        await navigator.getUserMedia_
           .then(function(stream2) {
-            self.gotMedia(stream2);
+            if (opcion=="guardar") {
+              self.gotMedia(stream2);
+            }else{
+              console.log(item)
+              self.entrarSala(item);
+            }
           })
           .catch(function(err) {
             alert("then " + err);
@@ -308,67 +391,29 @@ export default {
       }
     },
     init() {
-      var video = document.createElement("video");
-      document.body.appendChild(video);
-      this.getMedia();
+      this.video = document.createElement("video");
+      document.body.appendChild(this.video);
+      // this.getMedia();
     },
     gotMedia(stream) {
       this.paramsStream = {
         initiator: true,
-        trickle: false,
-        /*wrtc: wrtc,*/ stream: stream
+        trickle: false
+        /*wrtc: wrtc, stream: stream*/
       };
-      this.peer1 = new Peer(
-        location.hash === "#host" ? this.paramsStream : { trickle: false }
-      );
+      this.peer1 = new Peer(this.paramsStream);
 
       this.peer1.on("signal", data => {
         //GET MY DATA ON THE
         let dat = JSON.stringify(data);
-        if (location.hash === "#host") {
-          localStorage.setItem("stream", dat);
-        } else {
-          localStorage.setItem("cliente", dat);
-        }
+        this.token = dat;
+        this.guardar();
+        localStorage.setItem("stream", dat);
         document.getElementById("yourId").value = dat;
       });
-
-      document.getElementById("connect").addEventListener("click", function() {
-        let dat = localStorage.getItem("stream");
-        if (location.hash === "#host") {
-          let cl = localStorage.getItem("cliente");
-          self.peer1.signal(JSON.parse(cl));
-        } else {
-          localStorage.setItem("cliente", dat);
-          console.log(dat);
-          self.peer1.signal(JSON.parse(dat));
-        }
-
-        // alert('connect: ' + dat);
-      });
-      this.peer1.on("data", data => {
-        document.getElementById("messages").textContent += data + "\n";
-        console.log("got a message from peer1: " + data);
-      });
-
-      this.peer1.on("stream", stream => {
-        // got remote video stream, now let's show it in a video tag
-        var video = document.querySelector("video");
-        if ("srcObject" in video) {
-          video.srcObject = stream;
-        } else {
-          video.src = window.URL.createObjectURL(stream); // for older browsers
-        }
-        video.play();
-      });
-      document.getElementById("send").addEventListener("click", function() {
-        var yourMessage = document.getElementById("yourMessage").value;
-        console.log(
-          "yourMessage JSON.stringify(data): " + JSON.stringify(yourMessage)
-        );
-        self.peer1.send(yourMessage);
-      });
+      
     },
+
     resetValues() {
       this.nombre = null;
       this.capacidad = null;

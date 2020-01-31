@@ -3,6 +3,7 @@
 namespace App\Modules\Dashboard\Services;
 
 use App\Modules\Dashboard\Models\Sala;
+use App\Modules\Dashboard\Models\SalaDetalle;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
 class RegistroSalaService
@@ -11,53 +12,42 @@ class RegistroSalaService
     public function __construct()
     {
         $this->model = new Sala();
+        $this->model_sala_detalle = new SalaDetalle();
 
     }
 
-   /* public function cargarAll(){
+    public function cargarAll(){
 
         $datos = $this->model
-        ->where('empleado.estado', 1)
-        ->leftJoin('persona', 'empleado.persona_id', '=', 'persona.id')
-        ->leftJoin('sexo', 'persona.sexo_id', '=', 'sexo.id')
-        ->leftJoin('pais', 'persona.pais_id', '=', 'pais.id')
-        ->leftJoin('tipo_documento', 'persona.tipo_documento_id', '=', 'tipo_documento.id')
-        ->leftJoin('tipo_empleado', 'empleado.tipo_empleado_id', '=', 'tipo_empleado.id')
-        ->select(
-                    'empleado.id',
-                    'empleado.persona_id',
-                    'sexo.nombre as sexo',
-                    'pais.nombre as pais',
-                    'tipo_documento.nombre as tipo_documento',
-                    'persona.numero_documento',
-                    'persona.primer_apellido',
-                    'persona.segundo_apellido',
-                    'persona.primer_nombre',
-                    'persona.segundo_nombre',
-                    'persona.fecha_nacimiento',
-                    'persona.direccion_principal',
-                    'persona.telefono_principal',
-                    'persona.correo',
-                    'tipo_empleado.nombre as cargo',
-                    DB::raw('date_format(persona.fecha_creacion,"%d-%m-%Y %H:%i:%s") as fecha_registro'),
-                    DB::raw('CONCAT(persona.primer_apellido," ",persona.segundo_apellido) as apellidos'),
-                    DB::raw('CONCAT(persona.primer_nombre," ",persona.segundo_nombre) as nombres')
-        )
-        ->orderBy('persona.primer_apellido', 'asc')
+        ->where('estado', 1)
+        ->select('id','nombre','capacidad','expira_sala','estado','token','fecha_creacion')
+        ->orderBy('id', 'desc')
         ->get();
         return $datos;
-    }*/
+    }
 
     public function guardar($data)
     {
-        $data["usuario_creacion"] = auth()->user()["id"];
-        $data["usuario_edicion"] = auth()->user()["id"];
-        $save = $this->model->create($data);
-        if($save){
-            return json_encode(array("estado"=>"success","mensaje"=>"Sala Registrada", "data"=> $save));
-        }else{
-            return json_encode(array("estado"=>"error","mensaje"=>"Ha ocurrido un error al registrar la sala."));
+        try {
+            DB::beginTransaction();
+            $data["usuario_creacion"] = auth()->user()["id"];
+            $data["usuario_edicion"] = auth()->user()["id"];
+            $save = $this->model->create($data);
+            $save_detalle = $this->model_sala_detalle->create(array("usuario_id"=>auth()->user()["id"],"sala_id"=>$save->id,"admin"=>1,"usuario_creacion"=>auth()->user()["id"],"usuario_edicion"=>auth()->user()["id"]));
+            if($save && $save_detalle){
+                DB::commit();
+                return json_encode(array("estado"=>"success","mensaje"=>"Sala Registrada", "data"=> $save));
+            }else{
+                DB::rollBack();
+                return json_encode(array("estado"=>"error","mensaje"=>"Ha ocurrido un error al registrar la sala."));
+            }
+
+        } catch (Exception $th) {
+            DB::rollBack();
+            return json_encode(array("estado"=>"error","mensaje"=>("Ha ocurrido un error: ".$th)));
+            //throw $th;
         }
+        
     }
 
   /*  public function editar($data){

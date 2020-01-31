@@ -32,10 +32,10 @@ class MenuSeeder extends Seeder
             'updated_at' => now()->format('Y-m-d H:i:s'),
         ]);
         DB::table('menu')->insert([
-            'nombre' => 'Tracking',
+            'nombre' => 'Stream Online',
             'codigo' => Str::random(4),
             'padre_id' => 0,
-            'url' => 'tracking',
+            'url' => 'streaming',
             'icon' => '360',
             'created_at' => now()->format('Y-m-d H:i:s'),
             'updated_at' => now()->format('Y-m-d H:i:s'),
@@ -43,43 +43,6 @@ class MenuSeeder extends Seeder
         ]);
 
         
-        DB::table('menu')->insert([
-            'nombre' => 'REPORTES',
-            'codigo' => Str::random(4),
-            'padre_id' => 0,
-            'url' => '*',
-            'icon' => 'bar_chart',
-            'created_at' => now()->format('Y-m-d H:i:s'),
-            'updated_at' => now()->format('Y-m-d H:i:s'),
-        ]);
-        DB::table('menu')->insert([
-            'nombre' => 'Logística',
-            'codigo' => Str::random(4),
-            'padre_id' => 50,
-            'url' => '*',
-            'icon' => 'bar_chart',
-            'created_at' => now()->format('Y-m-d H:i:s'),
-            'updated_at' => now()->format('Y-m-d H:i:s'),
-            'estado' => 0,
-        ]);
-        DB::table('menu')->insert([
-            'nombre' => 'Contabilidad',
-            'codigo' => Str::random(4),
-            'padre_id' => 50,
-            'url' => '*',
-            'icon' => 'bar_chart',
-            'created_at' => now()->format('Y-m-d H:i:s'),
-            'updated_at' => now()->format('Y-m-d H:i:s'),
-            'estado' => 0,
-        ]);
-        DB::table('menu')->insert([
-            'nombre' => 'Materiales',
-            'codigo' => Str::random(4),
-            'padre_id' => 50,
-            'url' => 'reportes/materiales',
-            'icon' => 'bar_chart',
-            'created_at' => now()->format('Y-m-d H:i:s'),
-            'updated_at' => now()->format('Y-m-d H:i:s'),
-        ]);
+      
     }
 }

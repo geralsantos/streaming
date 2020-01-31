@@ -10,7 +10,13 @@ const mix = require('laravel-mix');
  | file for the application as well as bundling up all the JS files.
  |
  */
+mix.webpackConfig({
+    node: {
+      fs: "empty"
+    },
+});
 
 mix.js('resources/js/app.js', 'public/js')
     .js('resources/js/app.login.js', 'public/js')
+    
     /*.js('resources/js/index.js', 'public/js')*/

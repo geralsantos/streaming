@@ -17,6 +17,6 @@ class SalaDetalle extends Model
         'fecha_creacion',
         'fecha_modificacion'
     ];
-protected $table = 'sala';
+protected $table = 'sala_detalle';
 public $timestamps = false;
 }

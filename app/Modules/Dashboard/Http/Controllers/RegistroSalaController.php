@@ -19,6 +19,11 @@ class RegistroSalaController extends Controller
         $menu =getMenu();
         return view('dashboard::admin.home',compact('menu'));
     }
+    public function cargarAll(Request $request)
+    {
+        $data = $this->service->cargarAll($request);
+        return $data;
+    }
     public function guardar(MainRequest $request)
     {
         $form = $request->validated();
