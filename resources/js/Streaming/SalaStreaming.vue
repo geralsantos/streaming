@@ -31,7 +31,6 @@
   </div>
 </template>
 <script>
-var Peer = require("simple-peer");
 
 var self;
 var swal__;
@@ -64,58 +63,7 @@ export default {
       this.video = document.querySelector("video");
       this.cargarStreamer();
     },
-     gotMedia(stream) {
-      this.peer1 = new Peer(
-        { trickle: false }
-      );
-
-      this.peer1.on("signal", data => {
-        //GET MY DATA ON THE
-        let dat = JSON.stringify(data);
-       /* if (location.hash === "#host") {
-          this.token = dat;
-          localStorage.setItem("stream", dat);
-        } else {*/
-          localStorage.setItem("cliente", dat);
-      //  }
-        document.getElementById("yourId").value = dat;
-      });
-
-      document.getElementById("connect").addEventListener("click", function() {
-        let dat = localStorage.getItem("stream");
-       /* if (location.hash === "#host") {
-          let cl = localStorage.getItem("cliente");
-          self.peer1.signal(JSON.parse(cl));
-        } else {*/
-          localStorage.setItem("cliente", dat);
-          console.log(dat);
-          self.peer1.signal(JSON.parse(dat));
-       // }
-
-        // alert('connect: ' + dat);
-      });
-      this.peer1.on("data", data => {
-        document.getElementById("messages").textContent += data + "\n";
-        console.log("got a message from peer1: " + data);
-      });
-
-      this.peer1.on("stream", stream => {
-        // got remote video stream, now let's show it in a video tag
-        var video = document.querySelector("video");
-        if ("srcObject" in video) {
-          video.srcObject = stream;
-        } else {
-          video.src = window.URL.createObjectURL(stream); // for older browsers
-        }
-        video.play();
-      });
-      document.getElementById("send").addEventListener("click", function() {
-        var yourMessage = document.getElementById("yourMessage").value;
-        console.log(
-          "yourMessage JSON.stringify(data): " + JSON.stringify(yourMessage)
-        );
-        self.peer1.send(yourMessage);
-      });
+     gotMedia() { 
     },
   }
 };

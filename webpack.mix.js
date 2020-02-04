@@ -17,6 +17,7 @@ mix.webpackConfig({
 });
 
 mix.js('resources/js/app.js', 'public/js')
-    .js('resources/js/app.login.js', 'public/js')
+.js('resources/js/app.login.js', 'public/js')
+.js('node_modules/webrtc-adapter/out/adapter.js', 'public/js')
     
     /*.js('resources/js/index.js', 'public/js')*/

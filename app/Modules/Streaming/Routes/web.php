@@ -14,6 +14,6 @@
 Route::group(['middleware' => 'auth'],function () {
     Route::group(['prefix' => 'streaming'], function () {
         Route::get('{id}/', ['as' => 'streaming', 'uses' => 'StreamingController@index']);
-        Route::get('cargar/', ['as' => 'cargar', 'uses' => 'StreamingController@cargarAll']);
+        Route::get('cargar/{id}', ['as' => 'cargar', 'uses' => 'StreamingController@cargarAll']);
     });
 });

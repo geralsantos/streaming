@@ -14,8 +14,13 @@ class StreamingService
         $this->model_sala = new Sala();
 
     }
-    public function cargarAll(){
+    public function cargarAll($data){
 
+        $upd = $this->model_sala_detalle
+        ->where('id',auth()->user()["id"])
+        ->where('estado', 1)
+        ->update(array("sala_id"=>$data["id"]));
+        
         $datos["sala_detalle"] = $this->model_sala_detalle
         ->where('estado', 1)
         ->where('usuario_id',auth()->user()["id"])

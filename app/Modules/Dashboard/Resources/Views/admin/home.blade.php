@@ -14,8 +14,15 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,300italic,400italic,600italic">
     <link href="https://fonts.googleapis.com/css?family=Material+Icons" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('css/estilo_adjunto.css') }}">
-    <script src="https://unpkg.com/leaflet@1.0.2/dist/leaflet.js"></script>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.0.2/dist/leaflet.css" />
+
+    <link rel="stylesheet" href="{{ asset('dist/css/getHTMLMediaElement.css') }}">
+
+    <script src="{{ asset('dist/js/RTCMultiConnection.js') }}"></script>
+<script src="http://localhost:9001/socket.io/socket.io.js"></script>
+    
+
+        
 
 </head>
 <body class="hold-transition skin-blue sidebar-mini">
@@ -361,7 +368,12 @@ if (App::environment('local')) {
 
 ?>
             <!--script src="{{asset('js/index.js')}}" charset="utf-8"></script-->
+            <script src="https://unpkg.com/leaflet@1.0.2/dist/leaflet.js"></script>
+    <script src="{{ asset('dist/js/menu.js') }}"></script>
+<script src="{{asset('js/adapter.js')}}"></script>
 
+<!-- custom layout for HTML5 audio/video elements -->
+<script src="{{ asset('dist/js/getHTMLMediaElement.js') }}"></script>
 
 
 

@@ -20,7 +20,7 @@ class StreamingController extends Controller
     }
     public function cargarAll(Request $request)
     {
-        $data = $this->service->cargarAll($request);
+        $data = $this->service->cargarAll($request->route('id'));
         return $data;
     }
 }
