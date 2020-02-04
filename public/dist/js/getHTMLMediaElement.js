@@ -218,7 +218,7 @@ function getHTMLMediaElement(mediaElement, config) {
             mediaElementContainer.style.display = isFullScreeMode ? 'block' : 'inline-block';
 
             if (config.height) {
-                mediaBox.style.height = (isFullScreeMode ? (window.innerHeight - 20) : config.height) + 'px';
+                mediaBox.style.height = (isFullScreeMode ? (window.screen.height - 20) : config.height) + 'px';
             }
 
             if (!isFullScreeMode && config.onZoomout) config.onZoomout();
@@ -261,12 +261,13 @@ function getHTMLMediaElement(mediaElement, config) {
         mediaBox.style.height = config.height + 'px';
     }
 
-    mediaBox.querySelector('video').style.maxHeight = innerHeight + 'px';
+    mediaBox.querySelector('video').style.maxHeight = window.screen.height + 'px';
+    //mediaBox.querySelector('video').style.height = window.screen.height + 'px';
 
     var times = 0;
 
     function adjustControls() {
-        mediaControls.style.marginLeft = (mediaElementContainer.clientWidth - mediaControls.clientWidth - 2) + 'px';
+        //mediaControls.style.marginLeft = (mediaElementContainer.clientWidth - mediaControls.clientWidth - 2) + 'px';
 
         if (slider) {
             slider.style.width = (mediaElementContainer.clientWidth / 3) + 'px';
@@ -463,7 +464,7 @@ function getAudioElement(mediaElement, config) {
     var times = 0;
 
     function adjustControls() {
-        mediaControls.style.marginLeft = (mediaElementContainer.clientWidth - mediaControls.clientWidth - 7) + 'px';
+       // mediaControls.style.marginLeft = (mediaElementContainer.clientWidth - mediaControls.clientWidth - 7) + 'px';
         mediaControls.style.marginTop = (mediaElementContainer.clientHeight - mediaControls.clientHeight - 6) + 'px';
         if (times < 10) {
             times++;

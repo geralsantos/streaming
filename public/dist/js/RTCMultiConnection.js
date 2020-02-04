@@ -4463,6 +4463,7 @@ var RTCMultiConnection = function(roomid, forceOptions) {
 
                 if (isRoomJoined === false) {
                     if (connection.enableLogs) {
+                        
                         console.warn('isRoomJoined: ', error, ' roomid: ', connection.sessionid);
                     }
 

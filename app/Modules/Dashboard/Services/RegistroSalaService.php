@@ -25,7 +25,7 @@ class RegistroSalaService
             ->where('sala_detalle.admin', '=', 1)
             ->where('sala_detalle.usuario_id', '=', auth()->user()["id"]);
         })
-        ->select('sala.*','sala_detalle.*')
+        ->select('sala.*','sala_detalle.admin')
         ->orderBy('sala.id', 'desc')
         ->get();
         /*$datos["sala_detalle"] = $this->model_sala_detalle
@@ -37,7 +37,19 @@ class RegistroSalaService
         ->get();*/
         return $datos;
     }
-
+    public function iniciarStream($data)
+    {
+        $save = $this->model->find($data["id"])->update(array("token"=>""));
+        $token = request()->getSchemeAndHttpHost()."/streaming/#".$data["nombre"];
+        $save = $this->model->find($data["id"])->update(array("token"=>$token));
+        if ($save) {
+            return json_encode(array("estado"=>"success","mensaje"=>"Stream iniciado", "data"=> $save));
+        }else{
+            return json_encode(array("estado"=>"error","mensaje"=>"Ha ocurrido un error al iniciar el stream."));
+        }
+       
+        
+    }
     public function guardar($data)
     {
         try {

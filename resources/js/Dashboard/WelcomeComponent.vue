@@ -9,6 +9,7 @@
         </template>
 
         <template v-slot:content>
+          <div id="videos-container" style="overflow:auto;margin: 20px 0;"></div>
           <TableContent
             :title="'Listado de Salas'"
             :headers="headers"
@@ -18,7 +19,7 @@
             <template v-slot:btnAcciones="{item}">
               <template>
                 <v-btn
-                  v-if="item.admin==0 && !(item.token=='' || item.token==null)"
+                  v-if="(item.admin==0 || item.admin==null)"
                   @click="join_room(item)"
                   title="Ingresar"
                   class="info"
@@ -27,31 +28,16 @@
                   Ingresar&nbsp;
                   <v-icon class="white--text" small>send</v-icon>
                 </v-btn>
-                <v-btn @click="open_room(item)" v-if="item.admin==1 && (item.token=='' || item.token==null)" title="Modificar" class="success" small>Iniciar Streaming</v-btn>
+                <v-btn
+                  @click="open_room(item)"
+                  v-if="(item.admin==1)"
+                  title="Modificar"
+                  class="success"
+                  small
+                >Iniciar Streaming</v-btn>
               </template>
             </template>
           </TableContent>
-
-          <section class="make-center">
-            <input
-              type="text"
-              id="room-id"
-              value="abcdef"
-              autocorrect="off"
-              autocapitalize="off"
-              size="20"
-            />
-            <button id="open-room">Open Room</button>
-            <button id="join-room">Join Room</button>
-            <button id="open-or-join-room">Auto Open Or Join Room</button>
-
-            <div id="videos-container" style="margin: 20px 0;"></div>
-
-            <div
-              id="room-urls"
-              style="text-align: center;display: none;background: #F1EDED;margin: 15px -10px;border: 1px solid rgb(189, 189, 189);border-left: 0;border-right: 0;"
-            ></div>
-          </section>
           <!--div class="row justify-content-center">
             <div class="col-md-8">
               <div class="card">
@@ -196,14 +182,7 @@
 </template>
 
 <script>
-//var fs = require('fs');
-//var LocalStorage = require('node-localstorage').LocalStorage;
-//const ruta_ = "D:/xampp/htdocs/streaming";
-//const DataUserTmp = new LocalStorage(ruta_);
-//if (typeof localStorage === "undefined" || localStorage === null) {
-//var LocalStorage = require('node-localstorage').LocalStorage;
-//localStorage_ = new LocalStorage('/');
-//}
+var connection = new RTCMultiConnection();
 
 var self;
 var swal__;
@@ -231,7 +210,7 @@ export default {
         }
       },
       video: null,
-      paramsStream: {},
+      stream: { active: false },
       nombre: null,
       capacidad: null,
       menuDateExpiraSala: false,
@@ -331,12 +310,10 @@ export default {
       this.$validator.validateAll();
       if (this.errors.any()) return;
 
-      
-
       let valores = {
         nombre: this.nombre,
         capacidad: this.capacidad,
-        expira_sala: this.fechaExpiraSala + " " + this.horaExpiraSala,
+        expira_sala: this.fechaExpiraSala + " " + this.horaExpiraSala
       };
       this.loading = true;
       axios
@@ -360,59 +337,69 @@ export default {
           this.loading = false;
         });
     },
-    async getMedia(opcion, item = "") {
-      let stream = null;
-      try {
-        console.log(navigator.mediaDevices.getUserMedia);
-        if (location.hash === "#host") {
-          navigator.getUserMedia_ = navigator.mediaDevices.getDisplayMedia(
-            this.displayMedia
-          );
-          console.log("gerallll");
-        } else {
-          navigator.getUserMedia_ = navigator.mediaDevices.getUserMedia({
-            audio: true
-          });
-        }
-        await navigator.getUserMedia_
-          .then(function(stream2) {
-            if (opcion == "guardar") {
-              self.gotMedia(stream2);
-            } else {
-              console.log(item);
-              self.entrarSala(item);
-            }
-          })
-          .catch(function(err) {
-            alert("then " + err);
-          });
-      } catch (err) {
-        alert("ERROR " + err);
-      }
-    },
     open_room(item) {
       //disableInputButtons();
-      connection.open(item.nombre, function() {
-        showRoomURL(connection.sessionid);
-      });
+      let valores = item;
+      axios
+        .post("dashboard/iniciarStream/", valores)
+        .then(response => {
+          let data = response.data;
+          if (data.estado != "error") {
+            connection.open(item.nombre, function() {
+              self.stream.active = true;
+              self.showRoomURL(connection.sessionid);
+            });
+          }
+        })
+        .catch(errors => {
+          console.log(errors);
+          swal__.fire("ERROR!", "ha ocurrido un error: " + errors, "error");
+        });
     },
-    join_room(item){
- disableInputButtons();
+    join_room(item) {
+      //disableInputButtons();
 
-        connection.sdpConstraints.mandatory = {
-          OfferToReceiveAudio: false,
-          OfferToReceiveVideo: true
-        };
-        connection.join(item.nombre);
+      connection.sdpConstraints.mandatory = {
+        OfferToReceiveAudio: false,
+        OfferToReceiveVideo: true
+      };
+      connection.join(item.nombre);
+      setTimeout(() => {
+      window.open("/streaming/#" + item.nombre, "_blank");
+        
+      }, 1000);
+    },
+    showRoomURL(roomid) {
+      var roomHashURL = "#" + roomid;
+      var roomQueryStringURL = "?roomid=" + roomid;
+
+      var html = "<h2>Unique URL for your room:</h2><br>";
+
+      html +=
+        'Hash URL: <a href="' +
+        roomHashURL +
+        '" target="_blank">' +
+        roomHashURL +
+        "</a>";
+      html += "<br>";
+      html +=
+        'QueryString URL: <a href="' +
+        roomQueryStringURL +
+        '" target="_blank">' +
+        roomQueryStringURL +
+        "</a>";
+
+      /* var roomURLsDiv = document.getElementById("room-urls");
+        roomURLsDiv.innerHTML = html;
+
+        roomURLsDiv.style.display = "block";*/
     },
     init() {
       // ......................................................
       // .......................UI Code........................
       // ......................................................
 
-       
-
-      document.getElementById("open-or-join-room").onclick = function() {
+      /* document.getElementById("open-or-join-room").onclick = function() {
         disableInputButtons();
         connection.openOrJoin(
           document.getElementById("room-id").value,
@@ -430,13 +417,11 @@ export default {
             }
           }
         );
-      };
+      };*/
 
       // ......................................................
       // ..................RTCMultiConnection Code.............
       // ......................................................
-
-      var connection = new RTCMultiConnection();
 
       // by default, socket.io server is assumed to be deployed on your own URL
       connection.socketURL = ":9001/";
@@ -570,32 +555,6 @@ export default {
       // ......................Handling Room-ID................
       // ......................................................
 
-      function showRoomURL(roomid) {
-        var roomHashURL = "#" + roomid;
-        var roomQueryStringURL = "?roomid=" + roomid;
-
-        var html = "<h2>Unique URL for your room:</h2><br>";
-
-        html +=
-          'Hash URL: <a href="' +
-          roomHashURL +
-          '" target="_blank">' +
-          roomHashURL +
-          "</a>";
-        html += "<br>";
-        html +=
-          'QueryString URL: <a href="' +
-          roomQueryStringURL +
-          '" target="_blank">' +
-          roomQueryStringURL +
-          "</a>";
-
-        var roomURLsDiv = document.getElementById("room-urls");
-        roomURLsDiv.innerHTML = html;
-
-        roomURLsDiv.style.display = "block";
-      }
-
       (function() {
         var params = {},
           r = /([^&=]+)=?([^&]*)/g;
@@ -616,13 +575,13 @@ export default {
       } else {
         roomid = connection.token();
       }
-      document.getElementById("room-id").value = roomid;
+      /* document.getElementById("room-id").value = roomid;
       document.getElementById("room-id").onkeyup = function() {
         localStorage.setItem(
           connection.socketMessageEvent,
-          document.getElementById("room-id").value
+         // document.getElementById("room-id").value
         );
-      };
+      };*/
 
       var hashString = location.hash.replace("#", "");
       if (hashString.length && hashString.indexOf("comment-") == 0) {
@@ -635,7 +594,7 @@ export default {
       }
 
       if (roomid && roomid.length) {
-        document.getElementById("room-id").value = roomid;
+        //  document.getElementById("room-id").value = roomid;
         localStorage.setItem(connection.socketMessageEvent, roomid);
 
         // auto-join-room
@@ -661,9 +620,6 @@ export default {
       ) {
         alert("2G is not supported. Please use a better internet service.");
       }
-      /*this.video = document.createElement("video");
-      document.body.appendChild(this.video);*/
-      // this.getMedia();
     },
     gotMedia(stream) {
       this.paramsStream = {

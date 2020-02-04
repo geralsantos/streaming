@@ -30,4 +30,9 @@ class RegistroSalaController extends Controller
         $save = $this->service->guardar($form);
         return $save;
     }
+    public function iniciarStream(MainRequest $request)
+    {
+        $save = $this->service->iniciarStream($request);
+        return $save;
+    }
 }

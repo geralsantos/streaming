@@ -5657,7 +5657,7 @@ if (typeof module === 'object') {
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(/*! C:\xampp\htdocs\streaming\node_modules\webrtc-adapter\out\adapter.js */"./node_modules/webrtc-adapter/out/adapter.js");
+module.exports = __webpack_require__(/*! D:\xampp\htdocs\streaming\node_modules\webrtc-adapter\out\adapter.js */"./node_modules/webrtc-adapter/out/adapter.js");
 
 
 /***/ })

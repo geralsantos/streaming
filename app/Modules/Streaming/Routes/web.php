@@ -13,7 +13,7 @@
 
 Route::group(['middleware' => 'auth'],function () {
     Route::group(['prefix' => 'streaming'], function () {
-        Route::get('{id}/', ['as' => 'streaming', 'uses' => 'StreamingController@index']);
+        Route::get('/', ['as' => 'streaming', 'uses' => 'StreamingController@index']);
         Route::get('cargar/{id}', ['as' => 'cargar', 'uses' => 'StreamingController@cargarAll']);
     });
 });

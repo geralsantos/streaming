@@ -16,5 +16,6 @@ Route::group(['middleware' => 'auth'],function () {
         Route::get('/', ['as' => 'reports', 'uses' => 'HomeController@index']);
         Route::post('guardar/', ['as' => 'guardar', 'uses' => 'RegistroSalaController@guardar']);
         Route::get('cargar/', ['as' => 'cargar', 'uses' => 'RegistroSalaController@cargarAll']);
+        Route::post('iniciarStream/', ['as' => 'cargar', 'uses' => 'RegistroSalaController@iniciarStream']);
     });
 });
