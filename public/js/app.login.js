@@ -30020,7 +30020,7 @@ var store = new vuex__WEBPACK_IMPORTED_MODULE_1__["default"].Store({
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(/*! D:\xampp\htdocs\streaming\resources\js\app.login.js */"./resources/js/app.login.js");
+module.exports = __webpack_require__(/*! C:\xampp\htdocs\streaming\resources\js\app.login.js */"./resources/js/app.login.js");
 
 
 /***/ })

@@ -18,11 +18,23 @@ class RegistroSalaService
 
     public function cargarAll(){
 
-        $datos = $this->model
-        ->where('estado', 1)
-        ->select('id','nombre','capacidad','expira_sala','estado','token','fecha_creacion')
-        ->orderBy('id', 'desc')
+        $datos["salas"] = $this->model
+        ->where('sala.estado', 1)
+        ->leftJoin('sala_detalle', function ($leftJoin) {
+            $leftJoin->on('sala.id', '=', 'sala_detalle.sala_id')
+            ->where('sala_detalle.admin', '=', 1)
+            ->where('sala_detalle.usuario_id', '=', auth()->user()["id"]);
+        })
+        ->select('sala.*','sala_detalle.*')
+        ->orderBy('sala.id', 'desc')
         ->get();
+        /*$datos["sala_detalle"] = $this->model_sala_detalle
+        ->where('estado', 1)
+        ->where('usuario_id', auth()->user()["id"])
+        ->where('admin', 1)
+        ->select('*')
+        ->orderBy('id', 'desc')
+        ->get();*/
         return $datos;
     }
 
