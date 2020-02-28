@@ -2299,9 +2299,10 @@ var toast__;
         OfferToReceiveVideo: true
       };
       connection.join(item.nombre);
-      setTimeout(function () {
-        window.open("/streaming/#" + item.nombre, "_blank");
-      }, 1000);
+      /*setTimeout(() => {
+      window.open("/streaming/#" + item.nombre, "_blank");
+        
+      }, 1000);*/
     },
     showRoomURL: function showRoomURL(roomid) {
       var roomHashURL = "#" + roomid;

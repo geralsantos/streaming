@@ -364,10 +364,10 @@ export default {
         OfferToReceiveVideo: true
       };
       connection.join(item.nombre);
-      setTimeout(() => {
+      /*setTimeout(() => {
       window.open("/streaming/#" + item.nombre, "_blank");
         
-      }, 1000);
+      }, 1000);*/
     },
     showRoomURL(roomid) {
       var roomHashURL = "#" + roomid;
