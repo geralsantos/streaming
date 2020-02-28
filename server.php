@@ -1,5 +1,5 @@
 <?php
-
+$env = trim(explode("=",(explode("\n",file_get_contents(__DIR__.'/.env'))[1]))[1]);
 /**
  * Laravel - A PHP Framework For Web Artisans
  *
@@ -18,4 +18,8 @@ if ($uri !== '/' && file_exists(__DIR__.'/public'.$uri)) {
     return false;
 }
 
-require_once __DIR__.'/public/index.php';
+if ($env=="local") {
+    require_once __DIR__.'/public/index.php';
+}else{
+    require_once __DIR__.'/../stream.esx.me/index.php';
+}

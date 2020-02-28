@@ -1,5 +1,5 @@
 <?php
-
+$env = trim(explode("=",(explode("\n",file_get_contents(__DIR__.'/../.env'))[1]))[1]);
 /**
  * Laravel - A PHP Framework For Web Artisans
  *
@@ -21,8 +21,12 @@ define('LARAVEL_START', microtime(true));
 |
 */
 
-require __DIR__.'/../vendor/autoload.php';
+if ($env=="local") {
+    require __DIR__.'/../vendor/autoload.php';
+}else{
+    require __DIR__.'/../streaming/vendor/autoload.php';
 
+}
 /*
 |--------------------------------------------------------------------------
 | Turn On The Lights
@@ -35,8 +39,11 @@ require __DIR__.'/../vendor/autoload.php';
 |
 */
 
-$app = require_once __DIR__.'/../bootstrap/app.php';
-
+if ($env=="local") {
+    $app = require_once __DIR__.'/../bootstrap/app.php';
+}else{
+    $app = require_once __DIR__.'/../streaming/bootstrap/app.php';
+}
 /*
 |--------------------------------------------------------------------------
 | Run The Application
