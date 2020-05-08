@@ -21,5 +21,5 @@ if ($uri !== '/' && file_exists(__DIR__.'/public'.$uri)) {
 if ($env=="local") {
     require_once __DIR__.'/public/index.php';
 }else{
-    require_once __DIR__.'/../stream.esx.me/index.php';
+    require_once __DIR__.'/../streaming/index.php';
 }
