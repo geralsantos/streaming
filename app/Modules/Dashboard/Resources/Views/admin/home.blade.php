@@ -27,7 +27,7 @@
             <?php
     }else{
       ?>
-<script src="https://www.veipro.es:9001/socket.io/socket.io.js"></script>
+<script src="http://www.veipro.es:9001/socket.io/socket.io.js"></script>
 
       <?php
     }
