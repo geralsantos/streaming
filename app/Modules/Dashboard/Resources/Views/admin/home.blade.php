@@ -19,7 +19,20 @@
     <link rel="stylesheet" href="{{ asset('dist/css/getHTMLMediaElement.css') }}">
 
     <script src="{{ asset('dist/js/RTCMultiConnection.js') }}"></script>
-<script src="http://localhost:9001/socket.io/socket.io.js"></script>
+    <?php 
+    if (App::environment('local')) {
+      ?>
+      <script src="http://localhost:9001/socket.io/socket.io.js"></script>
+      
+            <?php
+    }else{
+      ?>
+<script src="https://www.veipro.es:9001/socket.io/socket.io.js"></script>
+
+      <?php
+    }
+    
+    ?>
     
 
         
