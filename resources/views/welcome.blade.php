@@ -83,18 +83,8 @@ background-size: 100% 100%;" >
     <!-- /.login-box -->
     <script src="https://cdn.jsdelivr.net/npm/vue@2.6.10/dist/vue.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/vuetify@2.1.11/dist/vuetify.min.js"></script>
-    <?php
-if (App::environment('local')) {
-?>
     <script src="{{ asset('js/app.login.js')}}"></script>
-<?php
-}else {
-?>
-    <script src="https://appjslaravel.000webhostapp.com/app.login.js" ></script>
-<?php
-}
 
-?>
     <!-- jQuery 3 -->
     <script src="{{ asset('bower_components/jquery/dist/jquery.min.js') }}"></script>
     <!-- Bootstrap 3.3.7 -->
