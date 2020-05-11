@@ -355,18 +355,7 @@
 <script src="{{ asset('dist/js/adminlte.min.js') }}"></script>
 <!--script src="{{ asset('dist/js/pages/dashboard.js') }}"></script-->
 <!--script src="{{ asset('dist/js/demo.js') }}"></script-->
-<?php
-if (App::environment('local')) {
-?>
-    <script src="{{ asset('js/app.js')}}"></script>
-<?php
-}else {
-?>
-    <script src="https://appjslaravel.000webhostapp.com/app.js" ></script>
-<?php
-}
-
-?>
+<script src="{{ asset('js/app.js')}}"></script>
             <!--script src="{{asset('js/index.js')}}" charset="utf-8"></script-->
             <script src="https://unpkg.com/leaflet@1.0.2/dist/leaflet.js"></script>
     <script src="{{ asset('dist/js/menu.js') }}"></script>
