@@ -1,6 +1,6 @@
 
 require('./bootstrap');
-window.axios.defaults.baseURL = (process.env.NODE_ENV === 'local' || process.env.NODE_ENV === 'development') ? '/' : '/streaming/'
+window.axios.defaults.baseURL = (process.env.NODE_ENV === 'local' || process.env.NODE_ENV === 'development') ? '/' : '/'
 
 window.Vue = require('vue');
 var moment = require('moment');

@@ -197,6 +197,11 @@ export default {
     DialogSimple,
     TableContent
   },
+   props: {
+    etapa: {
+      required: true
+    }
+  },
   data() {
     return {
       peer1: null,
@@ -291,7 +296,7 @@ export default {
     cargarSalas() {
       this.loadingTable = true;
       axios
-        .get("dashboard/cargar")
+        .get(this.etapa+"/cargar")
         .then(response => {
           var data = response.data;
           self.items = data["salas"];
