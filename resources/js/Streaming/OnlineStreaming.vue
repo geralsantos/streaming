@@ -124,7 +124,7 @@ export default {
       //disableInputButtons();
 
       connection.sdpConstraints.mandatory = {
-        OfferToReceiveAudio: false,
+        OfferToReceiveAudio: true,
         OfferToReceiveVideo: true
       };
       connection.join(item.nombre);
