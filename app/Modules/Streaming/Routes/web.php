@@ -13,7 +13,14 @@
 
 Route::group(['middleware' => 'auth'],function () {
     Route::group(['prefix' => 'streaming'], function () {
-        Route::get('/', ['as' => 'streaming', 'uses' => 'StreamingController@index']);
-        Route::get('cargar/{id}', ['as' => 'cargar', 'uses' => 'StreamingController@cargarAll']);
+        Route::get('/salas', ['as' => 'salas', 'uses' => 'StreamingSalasController@index']);
+        Route::post('guardar/', ['as' => 'guardar', 'uses' => 'StreamingSalasController@guardar']);
+        Route::get('cargar/', ['as' => 'cargar', 'uses' => 'StreamingSalasController@cargarAll']);
+        Route::post('iniciarStream/', ['as' => 'cargar', 'uses' => 'StreamingSalasController@iniciarStream']);
+        Route::post('encriptarStream/', ['as' => 'cargar', 'uses' => 'StreamingSalasController@encriptarStream']);
+        
+        Route::get('online/{id}', ['as' => 'streaming.online', 'uses' => 'StreamingOnlineController@index']);
+        Route::post('online/entrarStreaming/', ['as' => 'entrarStreaming', 'uses' => 'StreamingOnlineController@entrarStreaming']);
+         
     });
 });
