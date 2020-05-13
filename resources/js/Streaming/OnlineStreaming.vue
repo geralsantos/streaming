@@ -201,8 +201,8 @@ export default {
       };
 
       connection.sdpConstraints.mandatory = {
-        OfferToReceiveAudio: false,
-        OfferToReceiveVideo: false
+        OfferToReceiveAudio: true,
+        OfferToReceiveVideo: true
       };
 
       // https://www.rtcmulticonnection.org/docs/iceServers/
@@ -246,7 +246,7 @@ export default {
           try {
             video.setAttributeNode(document.createAttribute("muted"));
           } catch (e) {
-            video.setAttribute("muted", true);
+            video.setAttribute("muted", false);
           }
         }
         video.srcObject = event.stream;

@@ -307,10 +307,7 @@ export default {
         .catch(errors => {
           console.log(errors);
         });
-    },
-    entrarSala(item) {
-      window.open("/streaming/" + item.id, "_blank");
-    },
+    }, 
     guardar() {
       this.$validator.validateAll();
       if (this.errors.any()) return;
@@ -454,8 +451,8 @@ export default {
       };
 
       connection.sdpConstraints.mandatory = {
-        OfferToReceiveAudio: false,
-        OfferToReceiveVideo: false
+        OfferToReceiveAudio: true,
+        OfferToReceiveVideo: true
       };
 
       // https://www.rtcmulticonnection.org/docs/iceServers/
@@ -480,7 +477,7 @@ export default {
 
         event.mediaElement.removeAttribute("src");
         event.mediaElement.removeAttribute("srcObject");
-        event.mediaElement.muted = true;
+        event.mediaElement.muted = false;
         event.mediaElement.volume = 0;
         alert();
 
@@ -499,7 +496,7 @@ export default {
           try {
             video.setAttributeNode(document.createAttribute("muted"));
           } catch (e) {
-            video.setAttribute("muted", true);
+            video.setAttribute("muted", false);
           }
         }
         video.srcObject = event.stream;
