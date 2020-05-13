@@ -197,7 +197,8 @@ export default {
 
       connection.session = {
         screen: true,
-        oneway: true
+        oneway: true,
+        audio: true,
       };
 
       connection.sdpConstraints.mandatory = {
