@@ -8,40 +8,55 @@ import 'moment/locale/es';
 Vue.prototype.moment = moment;
 //import 'material-design-icons-iconfont/dist/material-design-icons.css' // Ensure you are using css-loader
 import VueRouter from 'vue-router';
-import Swal from 'sweetalert2'
+
 import Vuex from 'vuex'
 import Vuetify from 'vuetify'
 import 'vuetify/dist/vuetify.min.css'
 import store from './store.js';
+
 import * as VeeValidate from 'vee-validate';
 import routes from './routes.js'
 Vue.use(VueRouter);
 Vue.use(Vuex);
 Vue.use(Vuetify);
-Vue.use(VeeValidate,{
+Vue.use(VeeValidate, {
     useConstraintAttrs: false
 });
 // Translation provided by Vuetify (typescript)
 import es from 'vuetify/es5/locale/es'
 const vuetify = new Vuetify({
     icons: {
-      iconfont: 'md',
+        iconfont: 'md',
     },
     lang: {
-        locales: { es  },
+        locales: { es },
         current: 'es',
-      },
-  })
+    },
+    theme: {
+        themes: {
+            light: {
+                primary: '#666',
+                secondary: '#424242',
+                accent: '#82B1FF',
+                error: '#FF5252',
+                info: '#2196F3',
+                success: '#4CAF50',
+                warning: '#FFC107',
+            },
+        },
+    },
+})
 
 const router = new VueRouter({
     routes: routes,
     mode: "history"
 })
+
 Vue.component('contentheader', {
     data: function () {
-      return {
-        count: 0
-      }
+        return {
+            count: 0
+        }
     },
     template: `<section class="content-header">
     <h1>
@@ -53,23 +68,23 @@ Vue.component('contentheader', {
     <li class="active"><i v-if="$router.currentRoute.name=='Dashboard'" class="fa fa-dashboard"></i> {{$router.currentRoute.name}}</li>
     </ol>
 </section>`
-  })
-  var self;
+})
+var self;
 const app = new Vue({
     router,
     store,
     vuetify,
-    data: () =>({
-        usuario:'',
-        contrasena:'',
-        showPasswordLogin:false,
+    data: () => ({
+        usuario: '',
+        contrasena: '',
+        showPasswordLogin: false,
         dictionary: {
             custom: {
                 usuario: {
-                required: () => 'Ingrese su usuario',
-                max: 'El nombre de usuario debe ser menor a 50 caracteres',
-                // custom messages
-                },contrasena: {
+                    required: () => 'Ingrese su usuario',
+                    max: 'El nombre de usuario debe ser menor a 50 caracteres',
+                    // custom messages
+                }, contrasena: {
                     required: () => 'Ingrese su contraseña',
                     max: 'La contraseña debe ser menor a 50 caracteres',
                     // custom messages
@@ -77,26 +92,41 @@ const app = new Vue({
             }
         }
     }),
-    created:()=>{
+    created: () => {
     },
-    mounted:function(){
+    mounted: function () {
         self = this;
         this.$validator.localize('es', this.dictionary);
         console.log("abc2");
 
         this.mostrarModuloActivo();
+        this.block();
     },
-    methods:{
-        mostrarModuloActivo(){
+    methods: {
+        block() {
+            /*$(document).keydown(function (e) {
+                if (e.which === 123) {
+                    return false;
+                }
+            });
+            $(document).bind("contextmenu",function(e) { 
+                e.preventDefault();
+             
+            });*/
+           
+
+        },
+
+        mostrarModuloActivo() {
             var pathSplit = this.$router.currentRoute.path.split("/");
             var die = setInterval(() => {
-                let new_path = pathSplit.length==2 ?this.$router.currentRoute.path : "/"+pathSplit[1]+"/"+pathSplit[2];
+                let new_path = pathSplit.length == 2 ? this.$router.currentRoute.path : "/" + pathSplit[1] + "/" + pathSplit[2];
                 new_path = self.modulosReferencia(new_path);
-                let $sidebar_menu_tree = $('.sidebar-menu.tree').find('a[href="'+new_path+'"]');
-                if ($sidebar_menu_tree.length>0) {
+                let $sidebar_menu_tree = $('.sidebar-menu.tree').find('a[href="' + new_path + '"]');
+                if ($sidebar_menu_tree.length > 0) {
                     $sidebar_menu_tree.parents('li.treeview').addClass('menu-open');
-                    $sidebar_menu_tree.parents('li').css('background-color','#1e282c');
-                    $sidebar_menu_tree.parents('ul.treeview-menu').css('display','block');
+                    $sidebar_menu_tree.parents('li').css('background-color', '#1e282c');
+                    $sidebar_menu_tree.parents('ul.treeview-menu').css('display', 'block');
                     clearInterval(die);
                 }
             }, 200);
@@ -104,7 +134,7 @@ const app = new Vue({
                 clearInterval(die);
             }, 10000);
         },
-        modulosReferencia(path){
+        modulosReferencia(path) {
             switch (path) {
                 case "/presupuesto/items":
                 case "/presupuesto/insumos":
@@ -125,32 +155,33 @@ const app = new Vue({
                     break;
             }
         },
-        login(){
+
+        login() {
             this.$validator.validateAll();
             if (!this.errors.any()) {
-                let valores = {usuario:this.usuario,contrasena:this.contrasena};
+                let valores = { usuario: this.usuario, contrasena: this.contrasena };
                 var swal__ = this.$store.getters.getSwal;
                 axios.post('loginVerificar', valores)
-                .then(response => {
-                    console.log(response);
-                    var data = response.data;
-                    if (data.success===true) {
-                        //location.href='dashboard';
-                        document.getElementById('form-login').submit();
-                        //return false;
-                    }else{
-                        swal__.fire({
-                            type: 'error',
-                            title: 'Error',
-                            text: 'Credenciales incorrectas, intente de nuevo.',
-                          });
-                    }
-                })
-                .catch(errors => {
-                    swal__.fire('', 'Ha ocurrido un error: '+errors, 'danger');
-                }).finally(function () {
-                    //self.btnImportarDisabled=!self.btnImportarDisabled;
-                });
+                    .then(response => {
+                        console.log(response);
+                        var data = response.data;
+                        if (data.success === true) {
+                            //location.href='dashboard';
+                            document.getElementById('form-login').submit();
+                            //return false;
+                        } else {
+                            swal__.fire({
+                                type: 'error',
+                                title: 'Error',
+                                text: 'Credenciales incorrectas, intente de nuevo.',
+                            });
+                        }
+                    })
+                    .catch(errors => {
+                        swal__.fire('', 'Ha ocurrido un error: ' + errors, 'danger');
+                    }).finally(function () {
+                        //self.btnImportarDisabled=!self.btnImportarDisabled;
+                    });
             }
         }
     }

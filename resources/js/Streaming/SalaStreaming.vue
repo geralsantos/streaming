@@ -3,15 +3,14 @@
     <section class="content">
       <PanelContent :title="'Salas'">
         <template v-slot:optionsbuttonstop>
-          <v-btn class @click="nuevaSala()">
+          <v-btn v-if="usuario_sistema.nivel!='cliente'" class @click="nuevaSala()">
             <v-icon left dark>add</v-icon>Nueva Sala
           </v-btn>
         </template>
 
         <template v-slot:content>
-          <div id="videos-container" style="overflow:auto;margin: 20px 0;"></div>
           <TableContent
-            :title="'Listado de Salas'"
+           
             :headers="headers"
             :items="items"
             :loading="loadingTable"
@@ -96,7 +95,7 @@
                   ></v-text-field>
                 </v-col>
               </v-row>
-              <v-row>
+              <!--v-row>
                 <v-col cols="10" sm="6" md="6">
                   <v-menu
                     ref="menuDateExpiraSala"
@@ -163,7 +162,7 @@
                     ></v-time-picker>
                   </v-menu>
                 </v-col>
-              </v-row>
+              </v-row-->
             </v-container>
           </v-form>
         </template>
@@ -181,12 +180,12 @@
   </div>
 </template>
 
-<script>
-var connection = new RTCMultiConnection();
+<script> 
 
 var self;
 var swal__;
 var toast__;
+var connection;
 import PanelContent from "../components/PanelContent";
 import TableContent from "../components/TableContent";
 import DialogSimple from "../components/DialogSimple";
@@ -225,6 +224,7 @@ export default {
       loading: false,
       loadingTable: false,
       modificando: false,
+      usuario_sistema:null,
       dictionary: {
         custom: {
           fechaExpiraSala: {
@@ -251,7 +251,7 @@ export default {
           value: "id"
         },
         { text: "Sala", align: "center", value: "nombre" },
-        { text: "Vigencia", align: "center", value: "expira_sala" },
+        { text: "Capacidad", align: "center", value: "capacidad" },
 
         { text: "Fecha Creación", align: "center", value: "fecha_creacion" },
         { text: "Acciones", value: "action", sortable: false }
@@ -263,10 +263,17 @@ export default {
       val && setTimeout(() => (this.$refs.picker.activePicker = "YEAR"));
     }
   },
+  created: function() {
+    let user = document.getElementById("usuario_id");
+    this.usuario_sistema = {
+      nivel: user.getAttribute("data-nivel")
+    };
+  },
   mounted() {
     self = this;
     swal__ = this.$store.getters.getSwal;
     toast__ = this.$store.getters.getToastDefault;
+    connection = this.$store.getters.getConnection;
 
     this.$validator.localize("es", this.dictionary);
     this.init();
@@ -315,7 +322,6 @@ export default {
       let valores = {
         nombre: this.nombre,
         capacidad: this.capacidad,
-        expira_sala: this.fechaExpiraSala + " " + this.horaExpiraSala
       };
       this.loading = true;
       axios
@@ -369,6 +375,8 @@ export default {
             ref = ref.substr(-1) == "/" ? ref.slice(0, -1) : ref;
             window.open(ref+"/../online/" + data.salatoken, "_blank");
  
+          }else{
+             swal__.fire("ERROR!", "ha ocurrido un error: " + data.mensaje, "error");
           }
         })
         .catch(errors => {
@@ -470,6 +478,7 @@ export default {
 
       connection.videosContainer = document.getElementById("videos-container");
       connection.onstream = function(event) {
+        console.log("onstream",event)
         var existing = document.getElementById(event.streamid);
         if (existing && existing.parentNode) {
           existing.parentNode.removeChild(existing);
@@ -477,9 +486,9 @@ export default {
 
         event.mediaElement.removeAttribute("src");
         event.mediaElement.removeAttribute("srcObject");
-        event.mediaElement.muted = false;
+        event.mediaElement.muted = true;
         event.mediaElement.volume = 0;
-        alert();
+         
 
         var video = document.createElement("video");
 
@@ -496,7 +505,7 @@ export default {
           try {
             video.setAttributeNode(document.createAttribute("muted"));
           } catch (e) {
-            video.setAttribute("muted", false);
+            video.setAttribute("muted", true);
           }
         }
         video.srcObject = event.stream;

@@ -6,16 +6,19 @@
     :search="search"
     sort-by="calories"
     :sort-field="sortfield" :sort-desc="sortdesc"
-    class="elevation-1 TableContent" :loading="loading" loading-text="Cargando... Por favor espere"
+    class=" TableContent" :loading="loading" loading-text="Cargando... Por favor espere"
+    style="border-radius:10px;"
   >
     <template v-slot:top>
       <v-toolbar flat color="white">
-        <v-toolbar-title>{{title}}</v-toolbar-title>
+        <template v-if="title!=null">
+          <v-toolbar-title>{{title}}</v-toolbar-title>
         <v-divider
           class="mx-4"
           inset
           vertical
         ></v-divider>
+        </template>
         <template>
             <slot name="inputsAsideSearch"></slot>
         </template>
@@ -30,7 +33,11 @@
       ></v-text-field>
       </v-toolbar>
     </template>
-
+    
+ <template v-slot:item.action="{ item }">
+        <slot name="btnAcciones" :item="item"></slot>
+    </template>
+ 
     <!--/template-->
     <template v-slot:item.id="{ item }"><!--para todas los registros que tengan la cabecera-->
         <v-chip dark>
@@ -39,12 +46,9 @@
     </template>
     <template v-slot:item.fecha_creacion="{ item }"><!--para todas los registros que tengan la cabecera-->
         <v-chip>
-          {{ (10>new Date(item.fecha_creacion).getDate()?'0'+new Date(item.fecha_creacion).getDate():new Date(item.fecha_creacion).getDate())+"-"+(new Date(item.fecha_creacion).getMonth()+ 1+"-"+new Date(item.fecha_creacion).getFullYear())}}
+          {{ moment(item.fecha_creacion).format("DD-MM-YYYY")}}
         </v-chip>
-    </template>
-    <template v-slot:item.action="{ item }">
-        <slot name="btnAcciones" :item="item"></slot>
-    </template>
+    </template> 
     <template v-slot:no-data>
       <v-alert :value="true" color="error" style="color:white;" icon="warning">
         Lo sentimos, no existen registros.

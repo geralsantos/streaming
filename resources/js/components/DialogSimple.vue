@@ -2,7 +2,7 @@
     <div>
         <v-dialog persistent v-model="$store.state.dialogSimple.dialog" :max-width="$store.state.dialogSimple.maxwidth" scrollable  >
           <v-card>
-            <v-card-title class="headline primary lighten-1 white--text" primary-title > {{$store.state.dialogSimple.titulo}}
+            <v-card-title class="headline red accent-2 white--text" primary-title > {{$store.state.dialogSimple.titulo}}
                 <v-spacer></v-spacer>
                 <template>
                         <slot :name="$store.state.dialogSimple.optionsbuttonstop"></slot>
@@ -21,7 +21,7 @@
         </v-dialog>
         <v-dialog persistent v-if="$store.state.dialogSimple2.dialog" v-model="$store.state.dialogSimple2.dialog" :max-width="$store.state.dialogSimple2.maxwidth" scrollable >
           <v-card>
-              <v-card-title class="headline primary lighten-1 white--text" primary-title > {{$store.state.dialogSimple2.titulo}}</v-card-title>
+              <v-card-title class="headline blue darken-1 white--text" primary-title > {{$store.state.dialogSimple2.titulo}}</v-card-title>
             <v-card-text>
                 <template>
                      <slot  :name="$store.state.dialogSimple2.bodycard"> </slot>

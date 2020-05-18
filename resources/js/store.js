@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import Swal from 'sweetalert2'
-
+import RTCMultiConnection from './rtc/RTCMultiConnection.js';
 import { isContext } from 'vm';
 Vue.use(Vuex);
 
@@ -12,6 +12,7 @@ const store = new Vuex.Store({
 
       },
       swal:Swal,
+      connection: new RTCMultiConnection(),
       dialogSimple:{
         bodycard:'',
         buttons:'',
@@ -85,6 +86,10 @@ const store = new Vuex.Store({
         getSwal(state){
             return state.swal;
         },
+        getConnection(state){
+            return state.connection;
+        },
+        
         getToastDefault(state){
             return state.swal.mixin({
                 toast: true,

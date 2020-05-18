@@ -1,23 +1,44 @@
 <template>
   <div>
     <section class="content">
-      <PanelContent :title="'Salas'">
+      <PanelContent >
         <template v-slot:content>
-          <div id="videos-container" style="overflow:auto;margin: 20px 0;"></div>
+          
+         <v-container>
+           <v-row>
+             <v-col cols="12" sm="12">
+               <v-progress-circular
+            style="margin-left:50%;margin-top:10px;margin-bottom:10px;"
+            v-if="loading"
+            indeterminate
+            color="primary"
+          ></v-progress-circular>
+          <v-alert
+          v-else-if="!stream_active"
+            style="margin:10px;"
+            colored-border
+            type="error"
+            elevation="2"
+          >No se ha encontrado la video-coferencia activa </v-alert>
+                <div v-show="stream_active" id="videos-container" style="overflow:auto;margin: 20px 0;"></div>
+             </v-col>
+           </v-row>
+         </v-container>
         </template>
       </PanelContent>
       <DialogSimple></DialogSimple>
     </section>
-  <!--SideBarOptions></SideBarOptions-->
+    <!--SideBarOptions></SideBarOptions-->
   </div>
 </template>
 
 <script>
-var connection = new RTCMultiConnection();
 
 var self;
 var swal__;
 var toast__;
+var connection;
+
 import PanelContent from "../components/PanelContent";
 import TableContent from "../components/TableContent";
 import DialogSimple from "../components/DialogSimple";
@@ -27,7 +48,8 @@ export default {
   components: {
     PanelContent,
     DialogSimple,
-    TableContent,SideBarOptions
+    TableContent,
+    SideBarOptions
   },
   props: {
     etapa: {
@@ -36,6 +58,8 @@ export default {
   },
   data() {
     return {
+      stream_active:false,
+      loading:false,
       peer1: null,
       displayMedia: {
         audio: true,
@@ -62,7 +86,7 @@ export default {
     self = this;
     swal__ = this.$store.getters.getSwal;
     toast__ = this.$store.getters.getToastDefault;
-
+        connection = this.$store.getters.getConnection;
     this.init();
     this.entrarSala();
   },
@@ -72,6 +96,7 @@ export default {
     },
     entrarSala() {
       let valores = { room: self.$route.params.id };
+      this.loading=true;
       axios
         .post(this.etapa + "/online/entrarStreaming/", valores)
         .then(response => {
@@ -88,6 +113,7 @@ export default {
                 OfferToReceiveAudio: false,
                 OfferToReceiveVideo: true
               };
+              
               connection.join(data.response.salatoken);
             }
           } else {
@@ -98,6 +124,8 @@ export default {
         .catch(errors => {
           swal__.fire("ERROR!", "ha ocurrido un error: " + errors, "error");
           console.log(errors);
+        }).finally(()=>{
+          self.loading=false;
         });
     },
 
@@ -198,7 +226,7 @@ export default {
       connection.session = {
         screen: true,
         oneway: true,
-        audio: true,
+        audio: true
       };
 
       connection.sdpConstraints.mandatory = {
@@ -221,6 +249,8 @@ export default {
 
       connection.videosContainer = document.getElementById("videos-container");
       connection.onstream = function(event) {
+        self.loading=false;
+        self.stream_active=true;
         var existing = document.getElementById(event.streamid);
         if (existing && existing.parentNode) {
           existing.parentNode.removeChild(existing);
@@ -230,7 +260,6 @@ export default {
         event.mediaElement.removeAttribute("srcObject");
         event.mediaElement.muted = true;
         event.mediaElement.volume = 0;
-        alert();
 
         var video = document.createElement("video");
 
@@ -247,7 +276,7 @@ export default {
           try {
             video.setAttributeNode(document.createAttribute("muted"));
           } catch (e) {
-            video.setAttribute("muted", false);
+            video.setAttribute("muted", true);
           }
         }
         video.srcObject = event.stream;
@@ -267,6 +296,7 @@ export default {
         }, 5000);
 
         mediaElement.id = event.streamid;
+        
       };
 
       connection.onstreamended = function(event) {
