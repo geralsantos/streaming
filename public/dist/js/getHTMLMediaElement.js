@@ -214,7 +214,7 @@ function getHTMLMediaElement(mediaElement, config) {
 
             var isFullScreeMode = document.webkitIsFullScreen || document.mozFullScreen || document.fullscreen;
 
-            mediaElementContainer.style.width = (isFullScreeMode ? (window.innerWidth - 20) : config.width) + 'px';
+            //mediaElementContainer.style.width = (isFullScreeMode ? (window.innerWidth - 20) : config.width) + 'px';
             mediaElementContainer.style.display = isFullScreeMode ? 'block' : 'inline-block';
 
             if (config.height) {
@@ -252,10 +252,10 @@ function getHTMLMediaElement(mediaElement, config) {
     }
 
     mediaBox.appendChild(mediaElement);
-    //config.width = '';
-    if (!config.width) config.width = (innerWidth / 2) - 50;
+    config.width = '';
+    //if (!config.width) config.width = (innerWidth / 2) - 50;
 
-    mediaElementContainer.style.width = config.width + 'px';
+    //mediaElementContainer.style.width = config.width + 'px';
 
     if (config.height) {
         mediaBox.style.height = config.height + 'px';
@@ -454,7 +454,7 @@ function getAudioElement(mediaElement, config) {
 
     mediaBox.appendChild(mediaElement);
 
-    mediaElementContainer.style.width = '329px';
+    //mediaElementContainer.style.width = '329px';
     mediaBox.style.height = '90px';
 
     h2.style.width = mediaElementContainer.style.width;
