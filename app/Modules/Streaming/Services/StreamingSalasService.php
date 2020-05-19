@@ -60,10 +60,11 @@ class StreamingSalasService
         try {
             $data = $data->all();
             $sala = $this->model->where('id',$data["room"])->first();
-            $idhashed = explode("#",$sala["token"]);
             if (empty($sala["token"])) {
                 throw new \Exception('La videoconferencia aún no ha iniciado, por favor intente nuevamente.');
             }
+            $idhashed = explode("#",$sala["token"])[1];
+
             if ($idhashed) {
                 return json_encode(array("estado"=>"success","mensaje"=>"Se ha unido al stream", "salatoken"=>$idhashed));
             }else{
