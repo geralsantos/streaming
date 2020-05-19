@@ -104,7 +104,7 @@ const app = new Vue({
     },
     methods: {
         block() {
-            /*$(document).keydown(function (e) {
+            $(document).keydown(function (e) {
                 if (e.which === 123) {
                     return false;
                 }
@@ -112,7 +112,7 @@ const app = new Vue({
             $(document).bind("contextmenu",function(e) { 
                 e.preventDefault();
              
-            });*/
+            });
            
 
         },
