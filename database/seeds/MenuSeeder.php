@@ -15,7 +15,7 @@ class MenuSeeder extends Seeder
         DB::table('menu')->truncate();
         DB::table('menu')->insert([
             'nombre' => 'INICIO',
-            'codigo' => Str::random(4),
+            'codigo' => '1,2,3,4',
             'padre_id' => 0,
             'url' => '*',
             'icon' => 'home',
@@ -24,7 +24,7 @@ class MenuSeeder extends Seeder
         ]);
         DB::table('menu')->insert([
             'nombre' => 'Pantalla Principal',
-            'codigo' => Str::random(4),
+            'codigo' => '1,2,3,4',
             'padre_id' => 1,
             'url' => 'dashboard',
             'icon' => 'home',
@@ -33,7 +33,7 @@ class MenuSeeder extends Seeder
         ]);
         DB::table('menu')->insert([
             'nombre' => 'Stream Online',
-            'codigo' => Str::random(4),
+            'codigo' => '1,2,3,4',
             'padre_id' => 0,
             'url' => 'streaming',
             'icon' => '360',
