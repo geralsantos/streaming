@@ -16,6 +16,7 @@ class CreateTablePerfil extends Migration
         Schema::create('perfil', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('nombre', 191);
+            $table->string('codigo', 20);
             $table->unsignedInteger('estado')->default(1);
             $table->unsignedInteger('usuario_creacion');
             $table->unsignedInteger('usuario_edicion');
