@@ -20,16 +20,10 @@
     <link href="https://fonts.googleapis.com/css?family=Lato&display=swap" rel="stylesheet">
      <script defer src="https://use.fontawesome.com/releases/v5.0.13/js/all.js" integrity="sha384-xymdQtn1n3lH2wcu0qhcdaOpQwyoarkgLVxC/wZ5q7h9gHtxICrpcaSUfygqZGOe" crossorigin="anonymous"></script>
      
-     <?php 
-    if (App::environment('local')) {
-      ?>
       <link rel="stylesheet" href="{{ asset('dist/css/getHTMLMediaElement.css') }}">
 <!--script src="{{ asset('dist/js/RTCMultiConnection.js') }}"></script-->
 <script src="http://localhost:9001/socket.io/socket.io.js"></script>
       
-            <?php
-    }
-    ?>
     
 
 </head>
@@ -209,17 +203,11 @@
 <!--script src="{{ asset('dist/js/demo.js') }}"></script-->
     <script src="{{ asset('js/app.js')}}"></script> 
 
-
-    <?php 
-    if (App::environment('local')) {
-      ?>
+ 
      <script src="{{ asset('dist/js/menu.js') }}"></script>
 <script src="{{asset('dist/js/adapter.js')}}"></script>
 <script src="{{ asset('dist/js/getHTMLMediaElement.js') }}"></script>
-      
-            <?php
-    }
-    ?>
+       
 
    
 </body>
