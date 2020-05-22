@@ -17,7 +17,7 @@ class CreateMenuTable extends Migration
             $table->bigIncrements('id');
             $table->bigInteger('padre_id');
             $table->string('nombre');
-            $table->string('codigo');
+            $table->string('perfil');
             $table->string('icon');
             $table->string('url');
             $table->bigInteger('estado')->default(1);

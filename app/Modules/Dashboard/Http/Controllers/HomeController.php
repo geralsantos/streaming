@@ -33,7 +33,7 @@ class HomeController extends Controller
         $branch = array();
         $permitido = array();
         foreach ($elements as $element) {
-            $permisos = explode(",",$element['codigo']);
+            $permisos = explode(",",$element['perfil']);
             if (in_array($this->perfil_id,$permisos)) {
                 $permitido[] = $element['id'];
             }

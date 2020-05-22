@@ -1,31 +1,110 @@
 <template>
   <div>
     <section class="content">
-      <PanelContent >
-        <template v-slot:content>
-          
-         <v-container>
-           <v-row>
-             <v-col cols="12" sm="12">
-               <v-progress-circular
-            style="margin-left:50%;margin-top:10px;margin-bottom:10px;"
-            v-if="loading"
-            indeterminate
-            color="primary"
-          ></v-progress-circular>
-          <v-alert
-          v-else-if="!stream_active"
-            style="margin:10px;"
-            colored-border
-            type="error"
-            elevation="2"
-          >No se ha encontrado la video-coferencia activa </v-alert>
-                <div v-show="stream_active" id="videos-container" style="overflow:auto;margin: 20px 0;"></div>
-             </v-col>
-           </v-row>
-         </v-container>
-        </template>
-      </PanelContent>
+      <v-slide-x-transition>
+        <v-navigation-drawer
+          style="box-shadow: 0 6px 6px -3px rgba(0,0,0,.2),0 10px 14px 1px rgba(0,0,0,.14),0 4px 18px 3px rgba(0,0,0,.12)!important;z-index:100;width:350px;padding-top: 60px;"
+          absolute
+          right
+          v-show="show_chat"
+        >
+          <v-list dense>
+            <v-list-item>
+              <v-card style="height:100%;width:100%;" elevation="5" :style="{}" class="mx-auto">
+                <v-card-text>
+                  <v-row>chat</v-row>
+                </v-card-text>
+              </v-card>
+            </v-list-item>
+          </v-list>
+        </v-navigation-drawer>
+      </v-slide-x-transition>
+
+      <v-row>
+        <v-col cols="12" sm="12" md="12" :lg="show_camara?(expander_video?10:9):12">
+          <v-card class="mx-auto" elevation="10">
+            <v-card-text>
+              <v-progress-circular
+                style="margin-left:50%;margin-top:10px;margin-bottom:10px;"
+                v-if="dataStream.loading"
+                indeterminate
+                color="primary"
+              ></v-progress-circular>
+              <v-alert
+                v-else-if="!dataStream.stream_active"
+                style="margin:10px;"
+                colored-border
+                type="error"
+                elevation="2"
+              >No se ha encontrado la video-coferencia activa</v-alert>
+              <div
+                v-show="dataStream.stream_active"
+                id="videos-container"
+                style="overflow:auto;margin-bottom: 20px;"
+              ></div>
+              <v-row>
+                <v-col cols="12" sm="12" md="12">
+                  <v-tabs  show-arrows>
+                    <v-tabs-slider ></v-tabs-slider>
+                    <v-tab  @click="activarVideo">
+                      Video <v-icon right>{{videoActive?'visibility':'visibility_off'}}</v-icon>
+                    </v-tab>
+                    <v-tab @click="activarAudio">
+                      Audio <v-icon right>{{audioActive?'volume_up':'volume_off'}} </v-icon>
+                    </v-tab>
+                    <v-tab @click="show_chat=!show_chat">
+                      Chat  <v-icon right>{{show_chat?'insert_comment':'speaker_notes_off'}}</v-icon>
+                    </v-tab>
+                    <v-tab  @click="camaraActive=!camaraActive" >
+                        Cámara <v-icon right> {{camaraActive?'videocam':'videocam_off'}}</v-icon>
+                    </v-tab>
+                    <v-tab @click="expander()">
+                      {{expander_video?'Contraer':'Expander'}}
+                        <v-icon right>{{expander_video?'arrow_left':'arrow_right'}}</v-icon>
+                    </v-tab>
+                  
+                  </v-tabs>
+                </v-col>
+                <v-col cols="12" sm="12" md="12" lg="2">
+                  <select name id="selectmic" @change="changeMic"></select>
+                </v-col>
+                <v-col cols="12" sm="12" md="12" lg="2">
+                  <select name id="selectcam"></select>
+                </v-col>
+              </v-row>
+            </v-card-text>
+          </v-card>
+        </v-col>
+        <v-col cols="12" sm="12" md="12" :lg="expander_video?2:3">
+          <v-slide-x-reverse-transition hide-on-leave>
+            <v-card
+              v-show="show_camara || (show_camara && show_chat)"
+              class="mx-auto"
+              elevation="10"
+              style="margin-bottom:20px;"
+            >
+              <v-card-text>
+                <v-row>
+                  <v-col cols="12">
+                    <v-card
+                      data-simplebar
+                      class="mx-auto"
+                      :style="{'height':'75vh','overflow-y': 'auto','overflow-x': 'hidden'}"
+                    >
+                      <v-tabs show-arrows vertical>
+                        <v-tab v-for="i in 20" :key="i" :href="'#tab-' + i" style="height:150px;">
+                          <v-img height="120px" width="20px" src="https://i.picsum.photos/id/40/500/300.jpg"></v-img>
+                        </v-tab>
+                      </v-tabs>
+                    </v-card>
+                  </v-col>
+                </v-row>
+              </v-card-text>
+            </v-card>
+          </v-slide-x-reverse-transition>
+        </v-col>
+      </v-row>
+
       <DialogSimple></DialogSimple>
     </section>
     <!--SideBarOptions></SideBarOptions-->
@@ -33,16 +112,15 @@
 </template>
 
 <script>
-
 var self;
 var swal__;
 var toast__;
-var connection;
 
 import PanelContent from "../components/PanelContent";
 import TableContent from "../components/TableContent";
 import DialogSimple from "../components/DialogSimple";
 import SideBarOptions from "./components/SideBarOptions";
+import connection from "../connection.js";
 export default {
   name: "Dashboard",
   components: {
@@ -58,8 +136,21 @@ export default {
   },
   data() {
     return {
-      stream_active:false,
-      loading:false,
+      items: [
+        { title: "Home", icon: "mdi-home-city" },
+        { title: "My Account", icon: "mdi-account" },
+        { title: "Users", icon: "mdi-account-group-outline" }
+      ],
+
+      show_chat: false,
+      show_camara: true,
+      expander_video: false,
+      audioActive: true,
+      videoActive: true,
+      camaraActive: false,
+      stream_active: false,
+      loading: false,
+      dataStream: { loading: false, event: null, stream_active: false },
       peer1: null,
       displayMedia: {
         audio: true,
@@ -72,6 +163,7 @@ export default {
       },
       video: null,
       stream: { active: false },
+
       nombre: null,
       capacidad: null,
       menuDateExpiraSala: false,
@@ -86,34 +178,107 @@ export default {
     self = this;
     swal__ = this.$store.getters.getSwal;
     toast__ = this.$store.getters.getToastDefault;
-        connection = this.$store.getters.getConnection;
+    $(".fixed-sidebar").addClass("closed-sidebar");
+    $(".hamburger.close-sidebar-btn.hamburger--elastic").css(
+      "pointer-events",
+      "none"
+    );
     this.init();
     this.entrarSala();
   },
   methods: {
+    expander() {
+      this.expander_video = !this.expander_video;
+    },
+    activarVideo() {
+      connection.attachStreams.forEach(function(stream) {
+        stream.getVideoTracks().forEach(t => (t.enabled = !t.enabled));
+      });
+      this.videoActive = !this.videoActive;
+    },
+    activarAudio() {
+      connection.StreamsHandler.onSyncNeeded(
+        self.dataStream.event.streamid,
+        "unmute",
+        "both"
+      );
+      //connection.socket.emit('remotemute', { audio: false, video: false });
+      //connection.socket.emit('remoteunmute', { audio: true, video: false });
+      /*connection.attachStreams.forEach(function(stream) {
+          stream.getAudioTracks().forEach(t => (t.enabled = !t.enabled));
+        });*/
+      connection.attachStreams.forEach(function(stream) {
+        /* console.log(stream);
+          if (stream.audio) {
+            stream.mute('audio');
+          }else{
+            stream.unmute('audio');
+          }*/
+        stream.getAudioTracks().forEach(t => (t.enabled = !t.enabled));
+      });
+
+      //connection.socket.emit('remotemute', { audio: false, video: false });
+      this.audioActive = !this.audioActive;
+    },
+    changeMic(sourceId) {
+      sourceId = $("#selectmic").val();
+      console.log(sourceId);
+      //connection.mediaConstraints.audio.optional[0].sourceId = sourceId
+
+      connection.mediaConstraints = {
+        audio: {
+          mandatory: {},
+          optional: [
+            {
+              echoCancellation: false,
+              sourceId: sourceId
+            }
+          ]
+        },
+        video: {
+          mandatory: {},
+          optional: [
+            {
+              sourceId: "your-camera-id"
+            }
+          ]
+        }
+      };
+
+      if (connection.DetectRTC.browser.name === "Firefox") {
+        connection.mediaConstraints = {
+          audio: {
+            deviceId: sourceId
+          },
+          video: {
+            deviceId: "your-camera-id"
+          }
+        };
+      }
+      // if local or remote stream is muted
+    },
     dialogClose() {
       this.$store.state.dialogSimple.dialog = false;
     },
     entrarSala() {
       let valores = { room: self.$route.params.id };
-      this.loading=true;
+      this.loading = true;
       axios
         .post(this.etapa + "/online/entrarStreaming/", valores)
         .then(response => {
           var data = response.data;
-
           if (data.estado != "error") {
+            connection.videosContainer = document.getElementById(
+              "videos-container"
+            );
+            //this.stream_active = connection.dataStream.stream_active;
             if (data.response.isadmin) {
-              connection.open(self.$route.params.id, function() {
-                self.stream.active = true;
-                self.showRoomURL(connection.sessionid);
-              });
+              connection.open(self.$route.params.id, function() {});
             } else {
               connection.sdpConstraints.mandatory = {
-                OfferToReceiveAudio: false,
+                OfferToReceiveAudio: true,
                 OfferToReceiveVideo: true
               };
-              
               connection.join(data.response.salatoken);
             }
           } else {
@@ -124,143 +289,26 @@ export default {
         .catch(errors => {
           swal__.fire("ERROR!", "ha ocurrido un error: " + errors, "error");
           console.log(errors);
-        }).finally(()=>{
-          self.loading=false;
-        });
-    },
-
-    open_room(item) {
-      //disableInputButtons();
-      let valores = item;
-      axios
-        .post(this.etapa + "/iniciarStream/", valores)
-        .then(response => {
-          let data = response.data;
-          if (data.estado != "error") {
-            connection.open(item.nombre, function() {
-              self.stream.active = true;
-              self.showRoomURL(connection.sessionid);
-            });
-          }
         })
-        .catch(errors => {
-          console.log(errors);
-          swal__.fire("ERROR!", "ha ocurrido un error: " + errors, "error");
+        .finally(() => {
+          self.loading = false;
         });
     },
-    join_room(item) {
-      //disableInputButtons();
 
-      connection.sdpConstraints.mandatory = {
-        OfferToReceiveAudio: true,
-        OfferToReceiveVideo: true
-      };
-      connection.join(item.nombre);
-      /*setTimeout(() => {
-      window.open("/streaming/#" + item.nombre, "_blank");
-        
-      }, 1000);*/
-    },
-    showRoomURL(roomid) {
-      var roomHashURL = "#" + roomid;
-      var roomQueryStringURL = "?roomid=" + roomid;
-
-      var html = "<h2>Unique URL for your room:</h2><br>";
-
-      html +=
-        'Hash URL: <a href="' +
-        roomHashURL +
-        '" target="_blank">' +
-        roomHashURL +
-        "</a>";
-      html += "<br>";
-      html +=
-        'QueryString URL: <a href="' +
-        roomQueryStringURL +
-        '" target="_blank">' +
-        roomQueryStringURL +
-        "</a>";
-
-      /* var roomURLsDiv = document.getElementById("room-urls");
-        roomURLsDiv.innerHTML = html;
-
-        roomURLsDiv.style.display = "block";*/
-    },
     init() {
-      // ......................................................
-      // .......................UI Code........................
-      // ......................................................
-
-      /* document.getElementById("open-or-join-room").onclick = function() {
-        disableInputButtons();
-        connection.openOrJoin(
-          document.getElementById("room-id").value,
-          function(isRoomExist, roomid) {
-            if (isRoomExist === false && connection.isInitiator === true) {
-              // if room doesn't exist, it means that current user will create the room
-              showRoomURL(roomid);
-            }
-
-            if (isRoomExist) {
-              connection.sdpConstraints.mandatory = {
-                OfferToReceiveAudio: false,
-                OfferToReceiveVideo: true
-              };
-            }
-          }
-        );
-      };*/
-
-      // ......................................................
-      // ..................RTCMultiConnection Code.............
-      // ......................................................
-
-      // by default, socket.io server is assumed to be deployed on your own URL
-      connection.socketURL = ":9001/";
-
-      // comment-out below line if you do not have your own socket.io server
-      // connection.socketURL = 'https://rtcmulticonnection.herokuapp.com:443/';
-
-      connection.socketMessageEvent = "screen-sharing-demo";
-
-      connection.session = {
-        screen: true,
-        oneway: true,
-        audio: true
-      };
-
-      connection.sdpConstraints.mandatory = {
-        OfferToReceiveAudio: true,
-        OfferToReceiveVideo: true
-      };
-
-      // https://www.rtcmulticonnection.org/docs/iceServers/
-      // use your own TURN-server here!
-      connection.iceServers = [
-        {
-          urls: [
-            "stun:stun.l.google.com:19302",
-            "stun:stun1.l.google.com:19302",
-            "stun:stun2.l.google.com:19302",
-            "stun:stun.l.google.com:19302?transport=udp"
-          ]
-        }
-      ];
-
-      connection.videosContainer = document.getElementById("videos-container");
       connection.onstream = function(event) {
-        self.loading=false;
-        self.stream_active=true;
+        self.dataStream.loading = false;
+        self.dataStream.event = event;
         var existing = document.getElementById(event.streamid);
+
         if (existing && existing.parentNode) {
           existing.parentNode.removeChild(existing);
         }
 
         event.mediaElement.removeAttribute("src");
         event.mediaElement.removeAttribute("srcObject");
-        event.mediaElement.muted = true;
+        event.mediaElement.muted = false;
         event.mediaElement.volume = 0;
-
         var video = document.createElement("video");
 
         try {
@@ -288,7 +336,7 @@ export default {
           width: width,
           showOnMouseEnter: false
         });
-
+        video.setAttribute("controls", true);
         connection.videosContainer.appendChild(mediaElement);
 
         setTimeout(function() {
@@ -296,126 +344,10 @@ export default {
         }, 5000);
 
         mediaElement.id = event.streamid;
-        
+        self.dataStream.stream_active = true;
       };
-
-      connection.onstreamended = function(event) {
-        var mediaElement = document.getElementById(event.streamid);
-        if (mediaElement) {
-          mediaElement.parentNode.removeChild(mediaElement);
-
-          if (
-            event.userid === connection.sessionid &&
-            !connection.isInitiator
-          ) {
-            alert(
-              "Broadcast is ended. We will reload this page to clear the cache."
-            );
-            location.reload();
-          }
-        }
-      };
-
-      connection.onMediaError = function(e) {
-        if (e.message === "Concurrent mic process limit.") {
-          if (DetectRTC.audioInputDevices.length <= 1) {
-            alert(
-              "Please select external microphone. Check github issue number 483."
-            );
-            return;
-          }
-
-          var secondaryMic = DetectRTC.audioInputDevices[1].deviceId;
-          connection.mediaConstraints.audio = {
-            deviceId: secondaryMic
-          };
-
-          connection.join(connection.sessionid);
-        }
-      };
-
-      // ..................................
-      // ALL below scripts are redundant!!!
-      // ..................................
-
-      function disableInputButtons() {
-        document.getElementById("room-id").onkeyup();
-        document.getElementById("open-or-join-room").disabled = true;
-        document.getElementById("open-room").disabled = true;
-        document.getElementById("join-room").disabled = true;
-        document.getElementById("room-id").disabled = true;
-      }
-
-      // ......................................................
-      // ......................Handling Room-ID................
-      // ......................................................
-
-      (function() {
-        var params = {},
-          r = /([^&=]+)=?([^&]*)/g;
-
-        function d(s) {
-          return decodeURIComponent(s.replace(/\+/g, " "));
-        }
-        var match,
-          search = window.location.search;
-        while ((match = r.exec(search.substring(1))))
-          params[d(match[1])] = d(match[2]);
-        window.params = params;
-      })();
-
-      var roomid = "";
-      if (localStorage.getItem(connection.socketMessageEvent)) {
-        roomid = localStorage.getItem(connection.socketMessageEvent);
-      } else {
-        roomid = connection.token();
-      }
-      /* document.getElementById("room-id").value = roomid;
-      document.getElementById("room-id").onkeyup = function() {
-        localStorage.setItem(
-          connection.socketMessageEvent,
-         // document.getElementById("room-id").value
-        );
-      };*/
-
-      var hashString = location.hash.replace("#", "");
-      if (hashString.length && hashString.indexOf("comment-") == 0) {
-        hashString = "";
-      }
-
-      var roomid = params.roomid;
-      if (!roomid && hashString.length) {
-        roomid = hashString;
-      }
-
-      if (roomid && roomid.length) {
-        //  document.getElementById("room-id").value = roomid;
-        localStorage.setItem(connection.socketMessageEvent, roomid);
-
-        // auto-join-room
-        (function reCheckRoomPresence() {
-          connection.checkPresence(roomid, function(isRoomExist) {
-            if (isRoomExist) {
-              connection.join(roomid);
-              return;
-            }
-
-            setTimeout(reCheckRoomPresence, 5000);
-          });
-        })();
-
-        disableInputButtons();
-      }
-
-      // detect 2G
-      if (
-        navigator.connection &&
-        navigator.connection.type === "cellular" &&
-        navigator.connection.downlinkMax <= 0.115
-      ) {
-        alert("2G is not supported. Please use a better internet service.");
-      }
     },
+
     gotMedia(stream) {
       this.paramsStream = {
         initiator: true,
@@ -448,3 +380,49 @@ export default {
 };
 </script>
               
+             
+              
+              /*
+connection.codecs.video = 'vp9';
+connection.codecs.audio = 'opus';*/
+/*var BandwidthHandler = connection.BandwidthHandler;
+connection.bandwidth = {
+	audio: 128,
+	video: 256, //para bajar calidad al compartir camara(creo xd)
+	screen: 300 //para bajar calidad al compartir pantalla
+};*/
+connection.processSdp = function(sdp) {
+    if (DetectRTC.browser.name === 'Safari') {
+        return sdp;
+    }
+  console.log('connection.codecs.video',connection.codecs.video,sdp);
+    if (connection.codecs.video.toUpperCase() === 'VP9') {
+        sdp = CodecsHandler.preferCodec(sdp, 'vp9');
+    }
+     
+    if (DetectRTC.browser.name === 'Firefox') {
+        return sdp;
+    }
+
+    if (connection.bandwidth.video || connection.bandwidth.screen) {
+        sdp = CodecsHandler.setApplicationSpecificBandwidth(sdp, connection.bandwidth, !!connection.session.screen);
+    }
+    if (connection.bandwidth.video) {
+        sdp = CodecsHandler.setVideoBitrates(sdp, {
+            min: connection.bandwidth.video * 8 * 1024,
+            max: connection.bandwidth.video * 8 * 1024
+        });
+    }
+
+    if (connection.bandwidth.audio) {
+        sdp = CodecsHandler.setOpusAttributes(sdp, {
+            maxaveragebitrate: connection.bandwidth.audio * 8 * 1024,
+            maxplaybackrate: connection.bandwidth.audio * 8 * 1024,
+            stereo: 1,
+            maxptime: 3
+        });
+    }
+
+    return sdp;
+};
+              */

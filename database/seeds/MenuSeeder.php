@@ -15,7 +15,7 @@ class MenuSeeder extends Seeder
         DB::table('menu')->truncate();
         DB::table('menu')->insert([
             'nombre' => 'INICIO',
-            'codigo' => '1,2,3,4',
+            'perfil' => '1,2,3,4',
             'padre_id' => 0,
             'url' => '*',
             'icon' => 'home',
@@ -24,7 +24,7 @@ class MenuSeeder extends Seeder
         ]);
         DB::table('menu')->insert([
             'nombre' => 'Pantalla Principal',
-            'codigo' => '1,2,3,4',
+            'perfil' => '1,2,3,4',
             'padre_id' => 1,
             'url' => 'dashboard',
             'icon' => 'home',
@@ -33,16 +33,32 @@ class MenuSeeder extends Seeder
         ]);
         DB::table('menu')->insert([
             'nombre' => 'Stream Online',
-            'codigo' => '1,2,3,4',
+            'perfil' => '1,2,3,4',
             'padre_id' => 0,
-            'url' => 'streaming',
+            'url' => 'streaming/salas',
             'icon' => '360',
             'created_at' => now()->format('Y-m-d H:i:s'),
             'updated_at' => now()->format('Y-m-d H:i:s'),
 
         ]);
 
-        
-      
+        DB::table('menu')->insert([
+            'nombre' => 'Registrar',
+            'perfil' => '1,2',
+            'padre_id' => 0,
+            'url' => 'registrar',
+            'icon' => 'settings_applications',
+            'created_at' => now()->format('Y-m-d H:i:s'),
+            'updated_at' => now()->format('Y-m-d H:i:s'),
+        ]);
+        DB::table('menu')->insert([
+            'nombre' => 'Usuario',
+            'perfil' => '1,2',
+            'padre_id' => 4,
+            'url' => 'registrar/usuarios',
+            'icon' => 'supervisor_account',
+            'created_at' => now()->format('Y-m-d H:i:s'),
+            'updated_at' => now()->format('Y-m-d H:i:s'),
+        ]);
     }
 }

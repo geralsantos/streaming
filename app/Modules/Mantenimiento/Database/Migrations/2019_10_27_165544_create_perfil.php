@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateTablePerfil extends Migration
+class CreatePerfil extends Migration
 {
     /**
      * Run the migrations.
@@ -15,7 +15,7 @@ class CreateTablePerfil extends Migration
     {
         Schema::create('perfil', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->string('nombre', 191);
+            $table->string('nombre', 50);
             $table->string('codigo', 20);
             $table->unsignedInteger('estado')->default(1);
             $table->unsignedInteger('usuario_creacion');

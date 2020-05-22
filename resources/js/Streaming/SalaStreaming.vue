@@ -9,12 +9,7 @@
         </template>
 
         <template v-slot:content>
-          <TableContent
-           
-            :headers="headers"
-            :items="items"
-            :loading="loadingTable"
-          >
+          <TableContent :headers="headers" :items="items" :loading="loadingTable">
             <template v-slot:btnAcciones="{item}">
               <template>
                 <v-btn
@@ -180,15 +175,14 @@
   </div>
 </template>
 
-<script> 
-
+<script>
 var self;
 var swal__;
 var toast__;
-var connection;
 import PanelContent from "../components/PanelContent";
 import TableContent from "../components/TableContent";
 import DialogSimple from "../components/DialogSimple";
+import connection from '../connection.js'
 export default {
   name: "Dashboard",
   components: {
@@ -224,7 +218,7 @@ export default {
       loading: false,
       loadingTable: false,
       modificando: false,
-      usuario_sistema:null,
+      usuario_sistema: null,
       dictionary: {
         custom: {
           fechaExpiraSala: {
@@ -273,10 +267,8 @@ export default {
     self = this;
     swal__ = this.$store.getters.getSwal;
     toast__ = this.$store.getters.getToastDefault;
-    connection = this.$store.getters.getConnection;
 
     this.$validator.localize("es", this.dictionary);
-    this.init();
     this.cargarSalas();
   },
   methods: {
@@ -303,7 +295,7 @@ export default {
     cargarSalas() {
       this.loadingTable = true;
       axios
-        .get(this.etapa+"/cargar")
+        .get(this.etapa + "/cargar")
         .then(response => {
           var data = response.data;
           self.items = data["salas"];
@@ -314,18 +306,18 @@ export default {
         .catch(errors => {
           console.log(errors);
         });
-    }, 
+    },
     guardar() {
       this.$validator.validateAll();
       if (this.errors.any()) return;
 
       let valores = {
         nombre: this.nombre,
-        capacidad: this.capacidad,
+        capacidad: this.capacidad
       };
       this.loading = true;
       axios
-        .post(this.etapa+"/guardar/", valores)
+        .post(this.etapa + "/guardar/", valores)
         .then(response => {
           this.items = [];
           let data = response.data;
@@ -349,14 +341,15 @@ export default {
       //disableInputButtons();
       let valores = item;
       axios
-        .post(this.etapa+"/iniciarStream/", valores)
+        .post(this.etapa + "/iniciarStream/", valores)
         .then(response => {
           let data = response.data;
           if (data.estado != "error") {
+            console.log(connection);
+
             let ref = window.location.href;
             ref = ref.substr(-1) == "/" ? ref.slice(0, -1) : ref;
-            window.open(ref+"/../online/" + data.salatoken, "_blank");
-            
+            window.open(ref + "/../online/" + data.salatoken, "_blank");
           }
         })
         .catch(errors => {
@@ -365,31 +358,42 @@ export default {
         });
     },
     join_room(item) {
-      let valores = {room:item.id};
+      let valores = { room: item.id };
       axios
-        .post(this.etapa+"/encriptarStream/", valores)
+        .post(this.etapa + "/encriptarStream/", valores)
         .then(response => {
           let data = response.data;
           if (data.estado != "error") {
-            let ref = window.location.href;
-            ref = ref.substr(-1) == "/" ? ref.slice(0, -1) : ref;
-            window.open(ref+"/../online/" + data.salatoken, "_blank");
- 
-          }else{
-             swal__.fire("ERROR!", "ha ocurrido un error: " + data.mensaje, "error");
+            connection.checkPresence(data.salatoken, function(
+              isRoomExist,
+              roomid,
+              error
+            ) {
+              if (isRoomExist === true) {
+                let ref = window.location.href;
+                ref = ref.substr(-1) == "/" ? ref.slice(0, -1) : ref;
+                window.open(ref + "/../online/" + data.salatoken, "_blank");
+              } else {
+                //connection.open(roomid);
+                swal__.fire(
+              "Información",
+              "La videoconferencia aún no ha iniciado",
+              "warning"
+            );
+              }
+            });
+          } else {
+            swal__.fire(
+              "ERROR!",
+              "ha ocurrido un error: " + data.mensaje,
+              "error"
+            );
           }
         })
         .catch(errors => {
           console.log(errors);
           swal__.fire("ERROR!", "ha ocurrido un error: " + errors, "error");
         });
-      //disableInputButtons();
-
-      
-      /*setTimeout(() => {
-      window.open("/streaming/#" + item.nombre, "_blank");
-        
-      }, 1000);*/
     },
     showRoomURL(roomid) {
       var roomHashURL = "#" + roomid;
@@ -416,234 +420,7 @@ export default {
 
         roomURLsDiv.style.display = "block";*/
     },
-    init() {
-      // ......................................................
-      // .......................UI Code........................
-      // ......................................................
-
-      /* document.getElementById("open-or-join-room").onclick = function() {
-        disableInputButtons();
-        connection.openOrJoin(
-          document.getElementById("room-id").value,
-          function(isRoomExist, roomid) {
-            if (isRoomExist === false && connection.isInitiator === true) {
-              // if room doesn't exist, it means that current user will create the room
-              showRoomURL(roomid);
-            }
-
-            if (isRoomExist) {
-              connection.sdpConstraints.mandatory = {
-                OfferToReceiveAudio: false,
-                OfferToReceiveVideo: true
-              };
-            }
-          }
-        );
-      };*/
-
-      // ......................................................
-      // ..................RTCMultiConnection Code.............
-      // ......................................................
-
-      // by default, socket.io server is assumed to be deployed on your own URL
-      connection.socketURL = ":9001/";
-
-      // comment-out below line if you do not have your own socket.io server
-      // connection.socketURL = 'https://rtcmulticonnection.herokuapp.com:443/';
-
-      connection.socketMessageEvent = "screen-sharing-demo";
-
-      connection.session = {
-        screen: true,
-        oneway: true
-      };
-
-      connection.sdpConstraints.mandatory = {
-        OfferToReceiveAudio: true,
-        OfferToReceiveVideo: true
-      };
-
-      // https://www.rtcmulticonnection.org/docs/iceServers/
-      // use your own TURN-server here!
-      connection.iceServers = [
-        {
-          urls: [
-            "stun:stun.l.google.com:19302",
-            "stun:stun1.l.google.com:19302",
-            "stun:stun2.l.google.com:19302",
-            "stun:stun.l.google.com:19302?transport=udp"
-          ]
-        }
-      ];
-
-      connection.videosContainer = document.getElementById("videos-container");
-      connection.onstream = function(event) {
-        console.log("onstream",event)
-        var existing = document.getElementById(event.streamid);
-        if (existing && existing.parentNode) {
-          existing.parentNode.removeChild(existing);
-        }
-
-        event.mediaElement.removeAttribute("src");
-        event.mediaElement.removeAttribute("srcObject");
-        event.mediaElement.muted = true;
-        event.mediaElement.volume = 0;
-         
-
-        var video = document.createElement("video");
-
-        try {
-          video.setAttributeNode(document.createAttribute("autoplay"));
-          video.setAttributeNode(document.createAttribute("playsinline"));
-        } catch (e) {
-          video.setAttribute("autoplay", true);
-          video.setAttribute("playsinline", true);
-        }
-
-        if (event.type === "local") {
-          video.volume = 0;
-          try {
-            video.setAttributeNode(document.createAttribute("muted"));
-          } catch (e) {
-            video.setAttribute("muted", true);
-          }
-        }
-        video.srcObject = event.stream;
-
-        var width = innerWidth - 80;
-        var mediaElement = getHTMLMediaElement(video, {
-          title: event.userid,
-          buttons: ["full-screen"],
-          width: width,
-          showOnMouseEnter: false
-        });
-
-        connection.videosContainer.appendChild(mediaElement);
-
-        setTimeout(function() {
-          mediaElement.media.play();
-        }, 5000);
-
-        mediaElement.id = event.streamid;
-      };
-
-      connection.onstreamended = function(event) {
-        var mediaElement = document.getElementById(event.streamid);
-        if (mediaElement) {
-          mediaElement.parentNode.removeChild(mediaElement);
-
-          if (
-            event.userid === connection.sessionid &&
-            !connection.isInitiator
-          ) {
-            alert(
-              "Broadcast is ended. We will reload this page to clear the cache."
-            );
-            location.reload();
-          }
-        }
-      };
-
-      connection.onMediaError = function(e) {
-        if (e.message === "Concurrent mic process limit.") {
-          if (DetectRTC.audioInputDevices.length <= 1) {
-            alert(
-              "Please select external microphone. Check github issue number 483."
-            );
-            return;
-          }
-
-          var secondaryMic = DetectRTC.audioInputDevices[1].deviceId;
-          connection.mediaConstraints.audio = {
-            deviceId: secondaryMic
-          };
-
-          connection.join(connection.sessionid);
-        }
-      };
-
-      // ..................................
-      // ALL below scripts are redundant!!!
-      // ..................................
-
-      function disableInputButtons() {
-        document.getElementById("room-id").onkeyup();
-        document.getElementById("open-or-join-room").disabled = true;
-        document.getElementById("open-room").disabled = true;
-        document.getElementById("join-room").disabled = true;
-        document.getElementById("room-id").disabled = true;
-      }
-
-      // ......................................................
-      // ......................Handling Room-ID................
-      // ......................................................
-
-      (function() {
-        var params = {},
-          r = /([^&=]+)=?([^&]*)/g;
-
-        function d(s) {
-          return decodeURIComponent(s.replace(/\+/g, " "));
-        }
-        var match,
-          search = window.location.search;
-        while ((match = r.exec(search.substring(1))))
-          params[d(match[1])] = d(match[2]);
-        window.params = params;
-      })();
-
-      var roomid = "";
-      if (localStorage.getItem(connection.socketMessageEvent)) {
-        roomid = localStorage.getItem(connection.socketMessageEvent);
-      } else {
-        roomid = connection.token();
-      }
-      /* document.getElementById("room-id").value = roomid;
-      document.getElementById("room-id").onkeyup = function() {
-        localStorage.setItem(
-          connection.socketMessageEvent,
-         // document.getElementById("room-id").value
-        );
-      };*/
-
-      var hashString = location.hash.replace("#", "");
-      if (hashString.length && hashString.indexOf("comment-") == 0) {
-        hashString = "";
-      }
-
-      var roomid = params.roomid;
-      if (!roomid && hashString.length) {
-        roomid = hashString;
-      }
-
-      if (roomid && roomid.length) {
-        //  document.getElementById("room-id").value = roomid;
-        localStorage.setItem(connection.socketMessageEvent, roomid);
-
-        // auto-join-room
-        (function reCheckRoomPresence() {
-          connection.checkPresence(roomid, function(isRoomExist) {
-            if (isRoomExist) {
-              connection.join(roomid);
-              return;
-            }
-
-            setTimeout(reCheckRoomPresence, 5000);
-          });
-        })();
-
-        disableInputButtons();
-      }
-
-      // detect 2G
-      if (
-        navigator.connection &&
-        navigator.connection.type === "cellular" &&
-        navigator.connection.downlinkMax <= 0.115
-      ) {
-        alert("2G is not supported. Please use a better internet service.");
-      }
-    },
+    
     gotMedia(stream) {
       this.paramsStream = {
         initiator: true,

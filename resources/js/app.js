@@ -16,6 +16,8 @@ import store from './store.js';
 
 import * as VeeValidate from 'vee-validate';
 import routes from './routes.js'
+
+
 Vue.use(VueRouter);
 Vue.use(Vuex);
 Vue.use(Vuetify);
@@ -70,6 +72,8 @@ Vue.component('contentheader', {
 </section>`
 })
 var self;
+
+var connection;
 const app = new Vue({
     router,
     store,
@@ -78,6 +82,7 @@ const app = new Vue({
         usuario: '',
         contrasena: '',
         showPasswordLogin: false,
+        dataStream:null,
         dictionary: {
             custom: {
                 usuario: {
@@ -98,13 +103,14 @@ const app = new Vue({
         self = this;
         this.$validator.localize('es', this.dictionary);
         console.log("abc2");
-
+      
         this.mostrarModuloActivo();
         this.block();
+        
     },
     methods: {
         block() {
-            $(document).keydown(function (e) {
+            /*$(document).keydown(function (e) {
                 if (e.which === 123) {
                     return false;
                 }
@@ -112,9 +118,7 @@ const app = new Vue({
             $(document).bind("contextmenu",function(e) { 
                 e.preventDefault();
              
-            });
-           
-
+            });*/
         },
 
         mostrarModuloActivo() {
@@ -183,7 +187,8 @@ const app = new Vue({
                         //self.btnImportarDisabled=!self.btnImportarDisabled;
                     });
             }
-        }
+        },
+        
     }
 
 }).$mount('#app');

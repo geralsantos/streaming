@@ -9,14 +9,22 @@ use Illuminate\Notifications\Notifiable;
 class Usuario extends Authenticatable
 {
     protected $fillable = [
-                            'perfil_id',
-                            'usuario',
-                            'password',
-                            'estado',
-                            'usuario_creacion',
-                            'usuario_edicion',
-                            'fecha_creacion',
-                            'fecha_modificacion'
+        'primer_nombre',
+        'segundo_nombre',
+        'primer_apellido',
+        'segundo_apellido',
+        'correo',
+        'numero_documento',
+        'perfil_id',
+        'permiso',
+        'ubigeo_id',
+        'usuario',
+        'password',
+        'estado',
+        'usuario_creacion',
+        'usuario_edicion',
+        'fecha_creacion',
+        'fecha_modificacion'
                         ];
     protected $table = 'usuario';
     public $timestamps = false;
