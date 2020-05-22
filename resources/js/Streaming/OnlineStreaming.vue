@@ -21,7 +21,7 @@
       </v-slide-x-transition>
 
       <v-row>
-        <v-col cols="12" sm="12" md="12" :lg="show_camara?(expander_video?10:9):12">
+        <v-col cols="12" sm="12" md="12" :lg="dataStream.stream_active ?(show_camara?(expander_video?10:9):12):12">
           <v-card class="mx-auto" elevation="10">
             <v-card-text>
               <v-progress-circular
@@ -37,12 +37,12 @@
                 type="error"
                 elevation="2"
               >No se ha encontrado la video-coferencia activa</v-alert>
-              <div
-                v-show="dataStream.stream_active"
+              
+              <v-row v-show="dataStream.stream_active">
+                <div
                 id="videos-container"
                 style="overflow:auto;margin-bottom: 20px;"
               ></div>
-              <v-row>
                 <v-col cols="12" sm="12" md="12">
                   <v-tabs  show-arrows>
                     <v-tabs-slider ></v-tabs-slider>
@@ -75,7 +75,7 @@
             </v-card-text>
           </v-card>
         </v-col>
-        <v-col cols="12" sm="12" md="12" :lg="expander_video?2:3">
+        <v-col v-show="dataStream.stream_active" cols="12" sm="12" md="12" :lg="expander_video?2:3">
           <v-slide-x-reverse-transition hide-on-leave>
             <v-card
               v-show="show_camara || (show_camara && show_chat)"
