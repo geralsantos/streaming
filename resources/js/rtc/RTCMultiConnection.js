@@ -3970,7 +3970,7 @@ var RTCMultiConnection = function(roomid, forceOptions) {
         function handle(connection) {
             connection.autoTranslateText = false;
             connection.language = 'en';
-            connection.googKey = 'AIzaSyCgB5hmFY74WYB-EoWkhr9cAGr6TiTHrEE';
+            connection.googKey = '';
 
             // www.RTCMultiConnection.org/docs/Translator/
             connection.Translator = {
